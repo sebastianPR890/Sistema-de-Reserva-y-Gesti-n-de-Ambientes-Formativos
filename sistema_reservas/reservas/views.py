@@ -10,9 +10,9 @@ from .forms import ReservaForm
 def lista_reservas(request):
     # Solo muestra las reservas del usuario logueado, a menos que sea superusuario
     if request.user.is_superuser:
-        reservas = Reserva.objects.select_related('ambiente', 'usuario').all()
+        reservas = Reserva.objects.select_related('usuario').all() # 'ambiente' quitado temporalmente
     else:
-        reservas = Reserva.objects.filter(usuario=request.user).select_related('ambiente')
+        reservas = Reserva.objects.filter(usuario=request.user) # .select_related('ambiente') quitado temporalmente
         
     return render(request, 'reservas/lista_reservas.html', {'reservas': reservas})
 
@@ -27,7 +27,7 @@ def crear_reserva(request):
             Notificacion.crear(
                 usuario=request.user,
                 titulo='Reserva Creada',
-                mensaje=f'Tu reserva para el ambiente "{reserva.ambiente.nombre}" ha sido creada y está pendiente de aprobación.',
+                mensaje=f'Tu reserva ha sido creada y está pendiente de aprobación.', # Mensaje sin ambiente.nombre
                 tipo='reserva'
             )
             messages.success(request, '¡Reserva creada exitosamente!')
@@ -56,7 +56,7 @@ def editar_reserva(request, pk):
             Notificacion.crear(
                 usuario=request.user,
                 titulo='Reserva Actualizada',
-                mensaje=f'Tu reserva para "{reserva.ambiente.nombre}" ha sido actualizada correctamente.',
+                mensaje=f'Tu reserva ha sido actualizada correctamente.', # Mensaje sin ambiente.nombre
                 tipo='reserva'
             )
             messages.success(request, '¡Reserva actualizada exitosamente!')
@@ -75,14 +75,14 @@ def eliminar_reserva(request, pk):
 
     if request.method == 'POST':
         # Guardamos los datos para la notificación antes de borrar
-        ambiente_nombre = reserva.ambiente.nombre
+        # ambiente_nombre = reserva.ambiente.nombre
         fecha_inicio_str = reserva.fecha_inicio.strftime("%d/%m/%Y a las %H:%M")
         
         reserva.delete()
         Notificacion.crear(
             usuario=request.user,
             titulo='Reserva Eliminada',
-            mensaje=f'Tu reserva para el ambiente "{ambiente_nombre}" del {fecha_inicio_str} ha sido eliminada.',
+            mensaje=f'Tu reserva del {fecha_inicio_str} ha sido eliminada.', # Mensaje sin ambiente_nombre
             tipo='reserva'
         )
         messages.success(request, 'Reserva eliminada correctamente.')

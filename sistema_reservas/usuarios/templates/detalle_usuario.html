@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Usuario: {{ usuario.nombre_completo }}</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>{{ usuario.nombre_completo }}</h1>
+    <p><strong>Documento:</strong> {{ usuario.documento }}</p>
+    <p><strong>Email:</strong> {{ usuario.email }}</p>
+    <p><strong>Teléfono:</strong> {{ usuario.telefono|default:"No especificado" }}</p>
+    <p><strong>Rol:</strong> {{ usuario.get_rol_display }}</p>
+    <p><strong>Miembro desde:</strong> {{ usuario.date_joined|date:"d/m/Y" }}</p>
+
+    <a href="{% url 'usuarios:lista_usuarios' %}">Volver a la lista</a>
+</body>
+</html>
