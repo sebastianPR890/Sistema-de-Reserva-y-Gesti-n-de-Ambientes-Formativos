@@ -3,7 +3,6 @@ from django.db import models
 from django.conf import settings # Para referenciar AUTH_USER_MODEL
 from django.utils import timezone
 from django.core.exceptions import ValidationError # Para validaciones del modelo
-
 from ambientes.models import Ambiente # Ya no es importación local
 
 class Reserva(models.Model):

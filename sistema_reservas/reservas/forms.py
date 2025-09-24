@@ -4,7 +4,7 @@ from .models import Reserva
 class ReservaForm(forms.ModelForm):
     class Meta:
         model = Reserva
-        fields = ['usuario', 'fecha_inicio', 'fecha_fin', 'proposito', 'numero_asistentes']
+        fields = ['ambiente', 'fecha_inicio', 'fecha_fin', 'proposito', 'numero_asistentes']
         widgets = {
             'fecha_inicio': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'fecha_fin': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
