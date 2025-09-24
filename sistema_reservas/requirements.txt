@@ -8,3 +8,5 @@ django-extensions==3.2.3
 django-import-export==4.2.0
 
 #pip install -r requirements.txt
+
+#python version 3.13.5

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Reservas</title>
+</head>
+<body>
+    <h1>Lista de Reservas</h1>
+    <a href="{% url 'reservas:crear_reserva' %}">Crear Reserva</a>
+    <ul>
+        {% for reserva in reservas %}
+            <li>
+                {{ reserva }} - <a href="{% url 'reservas:editar_reserva' reserva.pk %}">Editar</a> - <a href="{% url 'reservas:eliminar_reserva' reserva.pk %}">Eliminar</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
