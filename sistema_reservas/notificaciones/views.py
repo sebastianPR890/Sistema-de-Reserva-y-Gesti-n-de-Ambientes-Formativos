@@ -34,7 +34,7 @@ def listar_notificaciones(request):
 
 @login_required
 @require_POST
-def marcar_como_leidas(request,pk):
+def marcar_como_leida(request,pk):
     try:
         notificacion = request.user.notificaciones.get(pk=pk)
         if not notificacion.leida:

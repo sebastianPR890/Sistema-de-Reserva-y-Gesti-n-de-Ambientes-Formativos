@@ -52,9 +52,9 @@ class Reserva(models.Model):
             raise ValidationError('No se puede crear una reserva con fecha de inicio en el pasado.')
         
         # Validar que no haya solapamiento con otras reservas aprobadas
-        # if self.ambiente and self.fecha_inicio and self.fecha_fin:
-        #     if not self.ambiente.esta_disponible(self.fecha_inicio, self.fecha_fin, exclude_reserva_id=self.pk):
-        #         raise ValidationError('El ambiente no está disponible en el horario seleccionado.')
+        if self.ambiente and self.fecha_inicio and self.fecha_fin:
+            if not self.ambiente.esta_disponible(self.fecha_inicio, self.fecha_fin, exclude_reserva_id=self.pk):
+                raise ValidationError('El ambiente no está disponible en el horario seleccionado.')
     
     def save(self, *args, **kwargs):
         self.full_clean() # Ejecuta las validaciones del método clean() antes de guardar
@@ -93,5 +93,4 @@ class Reserva(models.Model):
         self.save()
     
     def __str__(self):
-        # return f"Reserva {self.id} - {self.ambiente.nombre} ({self.fecha_inicio.strftime('%d/%m/%Y %H:%M')})"
-        return f"Reserva {self.id} por {self.usuario} ({self.fecha_inicio.strftime('%d/%m/%Y %H:%M')})"
+        return f"Reserva {self.id} - {self.ambiente.nombre} ({self.fecha_inicio.strftime('%d/%m/%Y %H:%M')})"
