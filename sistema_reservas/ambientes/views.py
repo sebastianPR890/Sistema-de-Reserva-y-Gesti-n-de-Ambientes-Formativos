@@ -13,7 +13,6 @@ from datetime import datetime, timedelta
 from .models import Ambiente
 from .forms import AmbienteForm, BusquedaAmbienteForm
 
-@login_required
 def lista_ambientes(request):
     """
     Vista para listar, buscar y filtrar ambientes.
@@ -71,7 +70,7 @@ def lista_ambientes(request):
     }
     return render(request, 'ambientes/lista_ambientes.html', context)
 
-class AmbienteCreateView(LoginRequiredMixin, CreateView):
+class AmbienteCreateView( CreateView):
     """
     Vista genérica para crear un nuevo ambiente.
     """
@@ -84,7 +83,7 @@ class AmbienteCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Ambiente creado exitosamente.")
         return super().form_valid(form)
 
-class AmbienteUpdateView(LoginRequiredMixin, UpdateView):
+class AmbienteUpdateView( UpdateView):
     """
     Vista genérica para editar un ambiente existente.
     """
@@ -97,7 +96,7 @@ class AmbienteUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Ambiente actualizado exitosamente.")
         return super().form_valid(form)
 
-class AmbienteDetailView(LoginRequiredMixin, DetailView):
+class AmbienteDetailView( DetailView):
     """
     Vista genérica para mostrar los detalles de un ambiente.
     """
@@ -105,7 +104,7 @@ class AmbienteDetailView(LoginRequiredMixin, DetailView):
     template_name = 'ambientes/ambiente_detalle.html'
     context_object_name = 'ambiente'
 
-class AmbienteDeleteView(LoginRequiredMixin, DeleteView):
+class AmbienteDeleteView( DeleteView):
     """
     Vista genérica para eliminar un ambiente.
     """

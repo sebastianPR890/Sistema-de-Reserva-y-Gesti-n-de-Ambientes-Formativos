@@ -12,7 +12,6 @@ from django.urls import reverse_lazy, reverse
 from .models import Equipo, MovimientoEquipo
 from .forms import EquipoForm, BusquedaEquipoForm, MovimientoEquipoForm
 
-@login_required
 def lista_equipos(request):
     """
     Vista para listar, buscar y filtrar equipos.
@@ -50,7 +49,7 @@ def lista_equipos(request):
     }
     return render(request, 'equipos/lista_equipos.html', context)
 
-class EquipoCreateView(LoginRequiredMixin, CreateView):
+class EquipoCreateView( CreateView):
     """
     Vista genérica para crear un nuevo equipo.
     """
@@ -63,7 +62,7 @@ class EquipoCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Equipo creado exitosamente.")
         return super().form_valid(form)
 
-class EquipoUpdateView(LoginRequiredMixin, UpdateView):
+class EquipoUpdateView( UpdateView):
     """
     Vista genérica para editar un equipo existente.
     """
@@ -76,7 +75,7 @@ class EquipoUpdateView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Equipo actualizado exitosamente.")
         return super().form_valid(form)
 
-class EquipoDetailView(LoginRequiredMixin, DetailView):
+class EquipoDetailView( DetailView):
     """
     Vista genérica para mostrar los detalles de un equipo.
     """
@@ -84,7 +83,7 @@ class EquipoDetailView(LoginRequiredMixin, DetailView):
     template_name = 'equipos/equipo_detalle.html'
     context_object_name = 'equipo'
 
-class EquipoDeleteView(LoginRequiredMixin, DeleteView):
+class EquipoDeleteView( DeleteView):
     """
     Vista genérica para eliminar un equipo.
     """
@@ -96,7 +95,7 @@ class EquipoDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(self.request, "Equipo eliminado exitosamente.")
         return super().form_valid(form)
 
-class MovimientoEquipoCreateView(LoginRequiredMixin, CreateView):
+class MovimientoEquipoCreateView( CreateView):
     """
     Vista para crear un nuevo movimiento de equipo.
     """
@@ -112,7 +111,7 @@ class MovimientoEquipoCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Movimiento de equipo registrado exitosamente.")
         return super().form_valid(form)
 
-class MovimientoEquipoListView(LoginRequiredMixin, ListView):
+class MovimientoEquipoListView( ListView):
     """
     Vista para listar todos los movimientos de equipos.
     """

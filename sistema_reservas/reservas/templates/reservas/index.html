@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} {% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <section class="hero-section">
+        <div class="hero-logo">
+            <img src="{% static 'logo_proyecto/logo.png.png' %}" alt="Logo Proyecto" class="logo-img">
+        </div>
+        <h1 class="hero-title">sistema de reservas Sena</h1>
+        <h2 class="hero-subtitle">Gestión de Ambientes Formativos</h2>
+        <p class="hero-description">
+            Bienvenido al sistema de reservas de ambientes del Centro Minero
+        </p>
+        <div class="cta-buttons">
+            <a href="{% url 'reservas:lista_reservas' %}" class="btn btn-primary"><i class="fas fa-calendar-alt"></i> Ver Reservas</a>
+            <a href="{% url 'reservas:crear_reserva' %}" class="btn btn-secondary"><i class="fas fa-plus"></i> Crear Reserva</a>
+        </div>
+    </section>
+</div>
+
+<style>
+.hero-logo {
+    width: 230px;        
+    height: 230px;       
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    background: white;
+    padding: 6px;        
+    overflow: hidden;    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-logo .logo-img {
+    width: 150%;          
+    height: auto;
+    object-fit: contain;
+}
+</style>
+{% endblock %}
