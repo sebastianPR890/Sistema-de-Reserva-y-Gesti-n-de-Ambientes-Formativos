@@ -12,44 +12,14 @@ from django.urls import reverse_lazy, reverse
 from .models import Equipo, MovimientoEquipo
 from .forms import EquipoForm, BusquedaEquipoForm, MovimientoEquipoForm
 
+@login_required
 def lista_equipos(request):
     """
-    Vista para listar, buscar y filtrar equipos.
+    Redireccionar a la lista de ambientes en lugar de mostrar lista de equipos
     """
-    form_busqueda = BusquedaEquipoForm(request.GET)
-    equipos = Equipo.objects.all()
+    return redirect('ambientes:lista')
 
-    if form_busqueda.is_valid():
-        busqueda = form_busqueda.cleaned_data.get('busqueda')
-        estado = form_busqueda.cleaned_data.get('estado')
-        activo = form_busqueda.cleaned_data.get('activo')
-        
-        if busqueda:
-            equipos = equipos.filter(
-                Q(codigo__icontains=busqueda) |
-                Q(nombre__icontains=busqueda) |
-                Q(serie__icontains=busqueda)
-            )
-
-        if estado:
-            equipos = equipos.filter(estado=estado)
-
-        if activo:
-            equipos = equipos.filter(activo=True)
-
-    equipos = equipos.order_by('codigo')
-
-    paginator = Paginator(equipos, 10)  # 10 equipos por página
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'equipos': page_obj,
-        'form_busqueda': form_busqueda,
-    }
-    return render(request, 'equipos/lista_equipos.html', context)
-
-class EquipoCreateView( CreateView):
+class EquipoCreateView(LoginRequiredMixin, CreateView):
     """
     Vista genérica para crear un nuevo equipo.
     """

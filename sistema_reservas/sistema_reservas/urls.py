@@ -8,4 +8,5 @@ urlpatterns = [
     path('ambientes/', include('ambientes.urls')),
     path('equipos/', include('equipos.urls')),
     path('notificaciones/', include('notificaciones.urls')),
+    path('accounts/', include('login.urls')),  # Agregamos las URLs de login
 ]

@@ -15,8 +15,21 @@
             Bienvenido al sistema de reservas de ambientes del Centro Minero
         </p>
         <div class="cta-buttons">
-            <a href="{% url 'reservas:lista_reservas' %}" class="btn btn-primary"><i class="fas fa-calendar-alt"></i> Ver Reservas</a>
-            <a href="{% url 'reservas:crear_reserva' %}" class="btn btn-secondary"><i class="fas fa-plus"></i> Crear Reserva</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'reservas:lista_reservas' %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-alt"></i> Ver Reservas
+                </a>
+                <a href="{% url 'reservas:crear_reserva' %}" class="btn btn-secondary">
+                    <i class="fas fa-plus"></i> Crear Reserva
+                </a>
+            {% else %}
+                <a href="{% url 'login:login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+                <a href="{% url 'login:registro' %}" class="btn btn-secondary">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            {% endif %}
         </div>
     </section>
 </div>

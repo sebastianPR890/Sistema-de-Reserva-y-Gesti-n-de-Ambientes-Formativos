@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "notificaciones",
     "reservas",
     "usuarios",
+    "login",  # Agregar la app de login
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
@@ -55,6 +56,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Configuración de autenticación
+LOGIN_URL = 'login:login'
+LOGIN_REDIRECT_URL = '/'  # Cambiado a la raíz para ir al index
+LOGOUT_REDIRECT_URL = 'login:login'
 
 ROOT_URLCONF = "sistema_reservas.urls"
 

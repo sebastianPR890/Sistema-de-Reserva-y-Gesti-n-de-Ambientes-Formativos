@@ -7,9 +7,11 @@ from notificaciones.models import Notificacion
 from .forms import ReservaForm
 
 def index(request):
-    return render(request, 'reservas/index.html')
+    """Vista del index accesible para todos los usuarios."""
+    return render(request, 'index.html')
 
-
+# Proteger todas las demás vistas
+@login_required
 def lista_reservas(request):
     # Solo muestra las reservas del usuario logueado, a menos que sea superusuario
     if request.user.is_superuser:
@@ -20,6 +22,7 @@ def lista_reservas(request):
     return render(request, 'reservas/lista_reservas.html', {'reservas': reservas})
 
 
+@login_required
 def crear_reserva(request):
     if request.method == 'POST':
         form = ReservaForm(request.POST)
@@ -40,6 +43,7 @@ def crear_reserva(request):
     return render(request, 'reservas/crear_reserva.html', {'form': form})
 
 
+@login_required
 def editar_reserva(request, pk):
     reserva = get_object_or_404(Reserva, pk=pk)
 
@@ -69,6 +73,7 @@ def editar_reserva(request, pk):
     return render(request, 'reservas/editar_reserva.html', {'form': form})
 
 
+@login_required
 def eliminar_reserva(request, pk):
     reserva = get_object_or_404(Reserva, pk=pk)
 
@@ -90,5 +95,7 @@ def eliminar_reserva(request, pk):
         )
         messages.success(request, 'Reserva eliminada correctamente.')
         return redirect('reservas:lista_reservas')
+        
+    return render(request, 'reservas/eliminar_reserva.html', {'reserva': reserva})
         
     return render(request, 'reservas/eliminar_reserva.html', {'reserva': reserva})

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mis Notificaciones</h1>
+        <div class="btn-group">
+            <a href="?estado=todas" class="btn btn-outline-primary {% if estado_filtro == 'todas' %}active{% endif %}">
+                Todas
+            </a>
+            <a href="?estado=no_leidas" class="btn btn-outline-primary {% if estado_filtro == 'no_leidas' %}active{% endif %}">
+                No leídas
+            </a>
+            <a href="?estado=leidas" class="btn btn-outline-primary {% if estado_filtro == 'leidas' %}active{% endif %}">
+                Leídas
+            </a>
+        </div>
+    </div>
+
+    {% if notificaciones %}
+        <div class="mb-3">
+            <button id="marcarTodasLeidas" class="btn btn-success">
+                <i class="fas fa-check-double"></i> Marcar todas como leídas
+            </button>
+        </div>
+
+        <div class="list-group">
+            {% for notificacion in notificaciones %}
+            <div class="list-group-item list-group-item-action {% if not notificacion.leida %}active{% endif %}" 
+                id="notificacion-{{ notificacion.id }}">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ notificacion.titulo }}</h5>
+                    <small>{{ notificacion.fecha_de_creacion|timesince }}</small>
+                </div>
+                <p class="mb-1">{{ notificacion.mensaje }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small>Tipo: {{ notificacion.get_tipo_display }}</small>
+                    {% if not notificacion.leida %}
+                    <button class="btn btn-sm btn-light marcar-leida" 
+                            data-id="{{ notificacion.id }}">
+                        Marcar como leída
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Primera</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            No hay notificaciones para mostrar.
+        </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Marcar una notificación individual como leída
+    $('.marcar-leida').click(function() {
+        const id = $(this).data('id');
+        $.post(`/notificaciones/${id}/marcar_leida/`, {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        })
+        .done(function() {
+            $(`#notificacion-${id}`).removeClass('active');
+            $(`#notificacion-${id} .marcar-leida`).remove();
+        });
+    });
+
+    // Marcar todas las notificaciones como leídas
+    $('#marcarTodasLeidas').click(function() {
+        $.post('/notificaciones/marcar_todas_leidas/', {
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        })
+        .done(function() {
+            $('.list-group-item').removeClass('active');
+            $('.marcar-leida').remove();
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

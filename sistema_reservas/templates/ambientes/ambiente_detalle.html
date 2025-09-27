@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ ambiente.nombre }} <small class="text-muted">({{ ambiente.codigo }})</small></h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Información General</h4>
+                    <ul class="list-unstyled">
+                        <li><strong>Tipo:</strong> {{ ambiente.get_tipo_display }}</li>
+                        <li><strong>Capacidad:</strong> {{ ambiente.capacidad }} personas</li>
+                        <li><strong>Ubicación:</strong> {{ ambiente.ubicacion }}</li>
+                        <li><strong>Estado:</strong> {% if ambiente.activo %}Activo{% else %}Inactivo{% endif %}</li>
+                    </ul>
+
+                    {% if ambiente.descripcion %}
+                    <h4>Descripción</h4>
+                    <p>{{ ambiente.descripcion }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <h4>Recursos</h4>
+                    <div class="list-group">
+                        {% if ambiente.recursos.computadores %}
+                        <div class="list-group-item">
+                            <h6><i class="fas fa-desktop"></i> Computadores</h6>
+                            <p class="mb-0">
+                                Total: {{ ambiente.recursos.numero_computadores }}<br>
+                                Dañados: {{ ambiente.recursos.computadores_danados }}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        {% if ambiente.recursos.escritorios %}
+                        <div class="list-group-item">
+                            <h6><i class="fas fa-chair"></i> Escritorios</h6>
+                            <p class="mb-0">
+                                Total: {{ ambiente.recursos.cantidad_escritorios }}<br>
+                                Dañados: {{ ambiente.recursos.escritorios_danados }}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        {% if ambiente.recursos.tablero_digital %}
+                        <div class="list-group-item">
+                            <h6><i class="fas fa-chalkboard"></i> Tablero Digital</h6>
+                            <p class="mb-0">Disponible</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if ambiente.recursos.observaciones %}
+                    <h4 class="mt-3">Observaciones</h4>
+                    <p>{{ ambiente.recursos.observaciones }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Equipos asignados -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4>Equipos Asignados</h4>
+                    {% if ambiente.equipos.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Estado</th>
+                                    <th>Marca/Modelo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for equipo in ambiente.equipos.all %}
+                                <tr>
+                                    <td>{{ equipo.codigo }}</td>
+                                    <td>{{ equipo.nombre }}</td>
+                                    <td>{{ equipo.get_estado_display }}</td>
+                                    <td>{{ equipo.marca }} {{ equipo.modelo }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#equipoModal{{ equipo.id }}">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal para detalles del equipo -->
+                                <div class="modal fade" id="equipoModal{{ equipo.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ equipo.nombre }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Código:</strong> {{ equipo.codigo }}</p>
+                                                <p><strong>Descripción:</strong> {{ equipo.descripcion }}</p>
+                                                <p><strong>Marca:</strong> {{ equipo.marca }}</p>
+                                                <p><strong>Modelo:</strong> {{ equipo.modelo }}</p>
+                                                <p><strong>Serie:</strong> {{ equipo.serie }}</p>
+                                                <p><strong>Estado:</strong> {{ equipo.get_estado_display }}</p>
+                                                {% if equipo.responsable %}
+                                                <p><strong>Responsable:</strong> {{ equipo.responsable.nombre_completo }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No hay equipos asignados a este ambiente.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
