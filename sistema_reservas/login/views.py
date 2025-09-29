@@ -10,26 +10,26 @@ def login_view(request):
         return redirect('/')
         
     if request.method == 'POST':
-        documento = request.POST.get('username')
+        documento = request.POST.get('username')  # El campo se llama username en el form
         password = request.POST.get('password')
         
         try:
-            # Primero verificamos si existe el usuario con ese documento
+            # Primero buscamos por documento
             user = Usuario.objects.get(documento=documento)
-            # Luego autenticamos
-            user = authenticate(username=documento, password=password)
+            # Intentamos autenticar usando el username (que es igual al documento)
+            user = authenticate(username=user.username, password=password)
             if user is not None:
                 login(request, user)
                 messages.success(request, f'Bienvenido {user.nombre_completo()}')
                 next_url = request.GET.get('next')
                 if next_url:
                     return redirect(next_url)
-                return redirect('/')  # Redireccionar a la raíz (index)
+                return redirect('/')
             else:
                 messages.error(request, 'Contraseña incorrecta')
         except Usuario.DoesNotExist:
             messages.error(request, 'No existe un usuario con ese documento')
-        
+    
     form = CustomLoginForm()
     return render(request, 'login/login.html', {'form': form})
 

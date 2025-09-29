@@ -24,20 +24,15 @@ class Usuario(AbstractUser):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     
-    # Sobrescribir campos de AbstractUser para que sean opcionales y se deriven del documento
-    # Esto es para evitar conflictos si se usan en formularios de registro,
-    # aunque los rellenamos en save()
-    username = models.CharField(max_length=150, unique=True, blank=True, null=True) 
+    # Sobrescribir campos de AbstractUser
+    username = models.CharField(max_length=150, unique=True)  # Quitamos blank=True y null=True
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=150, blank=True, null=True)
     
-    # Email de AbstractUser ya es único, no necesitamos redefinirlo
-    # email = models.EmailField(_("email address"), blank=True) # Ya está en AbstractUser
-
-    USERNAME_FIELD = 'documento'
-    # QUITAMOS 'nombres', 'apellidos' de REQUIRED_FIELDS porque se derivarán del modelo.
-    # El email es requerido por AbstractUser, y si lo queremos en el superusuario, lo dejamos.
-    REQUIRED_FIELDS = ['email'] 
+    # USERNAME_FIELD permanece como 'username' para compatibilidad con createsuperuser
+    USERNAME_FIELD = 'username'
+    # Agregamos documento como campo requerido
+    REQUIRED_FIELDS = ['email', 'documento', 'nombres', 'apellidos'] 
     
     class Meta:
         verbose_name = 'Usuario'
@@ -46,7 +41,7 @@ class Usuario(AbstractUser):
         ordering = ['apellidos', 'nombres'] # Ordenamiento por defecto
     
     def save(self, *args, **kwargs):
-        # Asegurarse de que el username y los nombres de AbstractUser se sincronicen con nuestros campos
+        # Si no hay username, usar el documento
         if not self.username:
             self.username = self.documento
         if not self.first_name:
