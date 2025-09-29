@@ -35,7 +35,7 @@ def login_view(request):
 
 def registro_view(request):
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('/')
         
     if request.method == 'POST':
         form = CustomRegistroForm(request.POST)
@@ -43,7 +43,7 @@ def registro_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Registro exitoso')
-            return redirect('index')
+            return redirect('/')
     else:
         form = CustomRegistroForm()
     
