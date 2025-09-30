@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalle de Equipo: {{ equipo.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% include 'messages.html' %} {# Para mostrar mensajes de éxito/error #}
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">{{ equipo.nombre }} <small class="text-white-50">({{ equipo.codigo }})</small></h2>
+            <div>
+                {% if user.is_staff %}
+                    <a href="{% url 'equipos:equipo_editar' equipo.pk %}" class="btn btn-warning btn-sm me-2">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="{% url 'equipos:equipo_eliminar' equipo.pk %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Información General</h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Código:</strong> {{ equipo.codigo }}</li>
+                        <li class="list-group-item"><strong>Nombre:</strong> {{ equipo.nombre }}</li>
+                        <li class="list-group-item"><strong>Estado:</strong> <span class="badge 
+                            {% if equipo.estado == 'DISPONIBLE' %}bg-success
+                            {% elif equipo.estado == 'PRESTADO' %}bg-warning text-dark
+                            {% elif equipo.estado == 'DANADO' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ equipo.get_estado_display }}
+                        </span></li>
+                        <li class="list-group-item"><strong>Marca:</strong> {{ equipo.marca }}</li>
+                        <li class="list-group-item"><strong>Modelo:</strong> {{ equipo.modelo }}</li>
+                        <li class="list-group-item"><strong>Serie:</strong> {{ equipo.serie }}</li>
+                        <li class="list-group-item"><strong>Ambiente:</strong> <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}">{{ equipo.ambiente.nombre }} ({{ equipo.ambiente.codigo }})</a></li>
+                        {% if equipo.responsable %}
+                        <li class="list-group-item"><strong>Responsable:</strong> {{ equipo.responsable.nombre_completo }}</li>
+                        {% endif %}
+                        <li class="list-group-item"><strong>Fecha de Adquisición:</strong> {{ equipo.fecha_adquisicion|date:"d M Y" }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="mb-3 text-primary mt-md-0 mt-4"><i class="fas fa-file-alt me-2"></i> Descripción</h4>
+                    {% if equipo.descripcion %}
+                        <p>{{ equipo.descripcion|linebreaksbr }}</p>
+                    {% else %}
+                        <p class="text-muted">No hay descripción disponible para este equipo.</p>
+                    {% endif %}
+
+                    {% if equipo.observaciones %}
+                        <h4 class="mb-3 text-primary mt-4"><i class="fas fa-comment-alt me-2"></i> Observaciones</h4>
+                        <p>{{ equipo.observaciones|linebreaksbr }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Ambiente
+                </a>
+                <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-outline-primary">
+                    <i class="fas fa-list"></i> Ver todos los Equipos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

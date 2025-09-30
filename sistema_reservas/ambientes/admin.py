@@ -35,4 +35,3 @@ class AmbienteAdmin(admin.ModelAdmin):
     # para mostrar los recursos
     readonly_fields = ('get_recursos_display',)
     
-   
