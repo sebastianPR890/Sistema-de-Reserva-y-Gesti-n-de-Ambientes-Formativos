@@ -154,3 +154,16 @@ class BusquedaAmbienteForm(forms.Form):
     con_computadores = forms.BooleanField(required=False, label='Con computadores')
     con_escritorios = forms.BooleanField(required=False, label='Con escritorios')
     con_tablero_digital = forms.BooleanField(required=False, label='Con tablero digital')
+    
+class CrearAmbienteForm(forms.ModelForm):
+    class Meta:
+        model = Ambiente
+        fields = ['codigo', 'nombre', 'descripcion', 'capacidad', 'tipo', 'ubicacion']
+        widgets = {
+            'codigo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ejemplo: A101'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del ambiente'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'capacidad': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'tipo': forms.Select(attrs={'class': 'form-control'}),
+            'ubicacion': forms.TextInput(attrs={'class': 'form-control'}),
+        }

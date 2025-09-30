@@ -63,9 +63,16 @@
             </div>
 
             <!-- Equipos asignados -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <h4>Equipos Asignados</h4>
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Equipos del Ambiente</h3>
+                    {% if user.is_staff %}
+                        <a href="{% url 'ambientes:agregar_equipo' ambiente.pk %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar Equipo
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
                     {% if ambiente.equipos.all %}
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -89,6 +96,14 @@
                                         <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#equipoModal{{ equipo.id }}">
                                             <i class="fas fa-info-circle"></i>
                                         </button>
+                                        {% if user.is_staff %}
+                                            <a href="{% url 'equipos:equipo_editar' equipo.pk %}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'equipos:equipo_eliminar' equipo.pk %}" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
 

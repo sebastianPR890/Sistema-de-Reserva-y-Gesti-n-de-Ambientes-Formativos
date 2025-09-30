@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -11,7 +10,9 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 
 from .models import Ambiente
-from .forms import AmbienteForm, BusquedaAmbienteForm
+from .forms import AmbienteForm, BusquedaAmbienteForm, CrearAmbienteForm
+from equipos.forms import EquipoForm
+from equipos.models import Equipo
 
 def lista_ambientes(request):
     """
@@ -153,3 +154,44 @@ def verificar_disponibilidad(request):
 
     # Si la solicitud no es AJAX, devuelve un error 403
     return JsonResponse({'disponible': False, 'mensaje': 'Acceso no autorizado.'}, status=403)
+
+@login_required
+def crear_ambiente(request):
+    if not request.user.is_staff:
+        messages.error(request, 'No tienes permisos para crear ambientes')
+        return redirect('ambientes:lista')
+        
+    if request.method == 'POST':
+        form = CrearAmbienteForm(request.POST)
+        if form.is_valid():
+            ambiente = form.save()
+            messages.success(request, f'Ambiente {ambiente.nombre} creado exitosamente')
+            return redirect('ambientes:lista')
+    else:
+        form = CrearAmbienteForm()
+    
+    return render(request, 'ambientes/crear_ambiente.html', {'form': form})
+
+@login_required
+def agregar_equipo(request, ambiente_id):
+    if not request.user.is_staff:
+        messages.error(request, 'No tienes permisos para agregar equipos')
+        return redirect('ambientes:detalle', pk=ambiente_id)
+        
+    ambiente = get_object_or_404(Ambiente, pk=ambiente_id)
+    
+    if request.method == 'POST':
+        form = EquipoForm(request.POST)
+        if form.is_valid():
+            equipo = form.save(commit=False)
+            equipo.ambiente = ambiente
+            equipo.save()
+            messages.success(request, f'Equipo {equipo.nombre} agregado exitosamente')
+            return redirect('ambientes:detalle', pk=ambiente_id)
+    else:
+        form = EquipoForm()
+    
+    return render(request, 'ambientes/agregar_equipo.html', {
+        'form': form,
+        'ambiente': ambiente
+    })
