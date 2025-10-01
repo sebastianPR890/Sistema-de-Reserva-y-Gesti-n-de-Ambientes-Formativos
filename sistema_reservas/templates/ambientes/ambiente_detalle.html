@@ -3,6 +3,9 @@
 
 {% block content %}
 <div class="container mt-4">
+
+    {% include 'messages.html' %}
+
     <div class="card">
         <div class="card-header">
             <h2>{{ ambiente.nombre }} <small class="text-muted">({{ ambiente.codigo }})</small></h2>
@@ -62,10 +65,16 @@
                 </div>
             </div>
 
-            <!-- Equipos asignados -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <h4>Equipos Asignados</h4>
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Equipos del Ambiente</h3>
+                    {% if user.is_staff %}
+                        <a href="{% url 'ambientes:agregar_equipo' ambiente.pk %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar Equipo
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
                     {% if ambiente.equipos.all %}
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -86,34 +95,23 @@
                                     <td>{{ equipo.get_estado_display }}</td>
                                     <td>{{ equipo.marca }} {{ equipo.modelo }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#equipoModal{{ equipo.id }}">
+                                        {# Botón para ver detalles (Modal de información) #}
+                                        <a href="{% url 'equipos:equipo_detalle' equipo.id %}" class="btn btn-sm btn-info">
                                             <i class="fas fa-info-circle"></i>
-                                        </button>
+                                        </a>
+
+                                        {% if user.is_staff %}
+                                            {# Botón para editar (Redirección a la página de edición) #}
+                                            <a href="{% url 'equipos:equipo_editar' equipo.pk %}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {# Botón para eliminar (Modal de confirmación) #}
+                                            <a href="{% url 'equipos:equipo_eliminar' equipo.pk %}" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
-
-                                <!-- Modal para detalles del equipo -->
-                                <div class="modal fade" id="equipoModal{{ equipo.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">{{ equipo.nombre }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p><strong>Código:</strong> {{ equipo.codigo }}</p>
-                                                <p><strong>Descripción:</strong> {{ equipo.descripcion }}</p>
-                                                <p><strong>Marca:</strong> {{ equipo.marca }}</p>
-                                                <p><strong>Modelo:</strong> {{ equipo.modelo }}</p>
-                                                <p><strong>Serie:</strong> {{ equipo.serie }}</p>
-                                                <p><strong>Estado:</strong> {{ equipo.get_estado_display }}</p>
-                                                {% if equipo.responsable %}
-                                                <p><strong>Responsable:</strong> {{ equipo.responsable.nombre_completo }}</p>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -125,7 +123,14 @@
                     {% endif %}
                 </div>
             </div>
+            <div class="mt-4">
+                <a href="{% url 'ambientes:lista' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista de ambientes
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
+

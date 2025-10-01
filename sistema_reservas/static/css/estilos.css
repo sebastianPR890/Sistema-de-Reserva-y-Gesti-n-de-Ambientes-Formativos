@@ -739,3 +739,23 @@ body {
         padding: 20px;
     }
 }
+
+/* Estilos para la barra lateral estática en la página de inicio */
+@media (min-width: 1200px) { /* Aplicar solo en pantallas grandes */
+    body.index-page.user-authenticated .sidebar {
+        transform: translateX(0);
+    }
+
+    body.index-page.user-authenticated .menu-toggle {
+        display: none; /* Ocultar el botón de hamburguesa */
+    }
+
+    body.index-page.user-authenticated .content-wrapper,
+    body.index-page.user-authenticated .main-content {
+        margin-left: 260px; /* Ancho de la sidebar (280px) - padding (20px) */
+    }
+
+    body.index-page.user-authenticated .overlay {
+        display: none; /* No se necesita overlay */
+    }
+}

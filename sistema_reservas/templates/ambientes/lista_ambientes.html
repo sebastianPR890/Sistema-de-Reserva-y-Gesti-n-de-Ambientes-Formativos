@@ -3,7 +3,14 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="titulo-lista mb-4">Ambientes Formativos</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="titulo-lista">Ambientes Formativos</h1>
+        {% if user.is_staff %}
+            <a href="{% url 'ambientes:crear' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Crear Ambiente
+            </a>
+        {% endif %}
+    </div>
 
     <!-- Formulario de búsqueda -->
     <div class="card mb-4">

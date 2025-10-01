@@ -9,11 +9,16 @@ class EquipoForm(forms.ModelForm):
         model = Equipo
         fields = [
             'codigo', 'nombre', 'descripcion', 'marca', 'modelo', 'serie',
-            'ambiente', 'estado', 'responsable', 'fecha_adquisicion',
-            'valor', 'activo'
+            'estado'
         ]
         widgets = {
-            'fecha_adquisicion': forms.DateInput(attrs={'type': 'date'}),
+            'codigo': forms.TextInput(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'modelo': forms.TextInput(attrs={'class': 'form-control'}),
+            'serie': forms.TextInput(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
         }
     
 class BusquedaEquipoForm(forms.Form):
