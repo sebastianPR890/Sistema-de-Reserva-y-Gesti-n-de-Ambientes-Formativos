@@ -123,7 +123,8 @@ body {
     left: 100%;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
     background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
     transform: translateX(5px);
@@ -742,20 +743,19 @@ body {
 
 /* Estilos para la barra lateral estática en la página de inicio */
 @media (min-width: 1200px) { /* Aplicar solo en pantallas grandes */
-    body.index-page.user-authenticated .sidebar {
+    body.user-authenticated .sidebar {
         transform: translateX(0);
     }
 
-    body.index-page.user-authenticated .menu-toggle {
+    body.user-authenticated .menu-toggle {
         display: none; /* Ocultar el botón de hamburguesa */
     }
 
-    body.index-page.user-authenticated .content-wrapper,
-    body.index-page.user-authenticated .main-content {
-        margin-left: 260px; /* Ancho de la sidebar (280px) - padding (20px) */
+    body.user-authenticated .content-wrapper {
+        margin-left: 280px; /* Ancho de la sidebar */
     }
 
-    body.index-page.user-authenticated .overlay {
+    body.user-authenticated .overlay {
         display: none; /* No se necesita overlay */
     }
 }

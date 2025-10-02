@@ -25,28 +25,26 @@
 <body class="{% if user.is_authenticated %}user-authenticated{% endif %} {% block body_class %}{% endblock %}">
     {% if user.is_authenticated %}
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <img src="https://www.soydebuenaventura.com/media/transparent/20230802_logosena.png" alt="Logo SENA">
-            </div>
-            <div class="sidebar-title">SENA APP</div>
-            <div class="sidebar-subtitle">Sistema de Reservas</div>
-        </div>
-        <nav class="sidebar-nav">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="https://www.soydebuenaventura.com/media/transparent/20230802_logosena.png" alt="Logo SENA">
+                </div>
+                <div class="sidebar-title">SISTEMA DE RESERVAS</div>
+            </div>        <nav class="sidebar-nav">
             <div class="nav-item">
-                <a href="/" class="nav-link"><i class="fas fa-home nav-icon"></i>Inicio</a>
+                <a href="/" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}"><i class="fas fa-home nav-icon"></i>Inicio</a>
             </div>
             <div class="nav-item">
-                <a href="{% url 'reservas:lista_reservas' %}" class="nav-link"><i class="fas fa-calendar-alt nav-icon"></i>Reservas</a>
+                <a href="{% url 'reservas:lista_reservas' %}" class="nav-link {% if request.resolver_match.app_name == 'reservas' and request.resolver_match.url_name != 'index' %}active{% endif %}"><i class="fas fa-calendar-alt nav-icon"></i>Reservas</a>
             </div>
             <div class="nav-item">
-                <a href="{% url 'ambientes:lista' %}" class="nav-link"><i class="fas fa-door-open nav-icon"></i>Ambientes</a>
+                <a href="{% url 'ambientes:lista' %}" class="nav-link {% if request.resolver_match.app_name == 'ambientes' %}active{% endif %}"><i class="fas fa-door-open nav-icon"></i>Ambientes</a>
             </div>
             <div class="nav-item">
-                <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link"><i class="fas fa-users nav-icon"></i>Usuarios</a>
+                <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if request.resolver_match.app_name == 'usuarios' %}active{% endif %}"><i class="fas fa-users nav-icon"></i>Usuarios</a>
             </div>
             <div class="nav-item">
-                <a href="{% url 'notificaciones:listar_notificaciones' %}" class="nav-link"><i class="fas fa-bell nav-icon"></i>Notificaciones</a>
+                <a href="{% url 'notificaciones:listar_notificaciones' %}" class="nav-link {% if request.resolver_match.app_name == 'notificaciones' %}active{% endif %}"><i class="fas fa-bell nav-icon"></i>Notificaciones</a>
             </div>
             <div class="nav-item">
                 <a href="/admin/" class="nav-link"><i class="fas fa-cog nav-icon"></i> Panel Admin</a>
