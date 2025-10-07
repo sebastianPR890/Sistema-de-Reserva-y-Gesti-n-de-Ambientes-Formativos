@@ -21,3 +21,15 @@ def detalle_usuario(request, pk):
     """Vista para ver detalles de usuario - solo accesible por administradores"""
     usuario = get_object_or_404(Usuario, pk=pk)
     return render(request, 'usuarios/detalle_usuario.html', {'usuario': usuario})
+
+@login_required 
+def perfil_usuario(request):
+    """
+    Vista que muestra los detalles del usuario logueado. 
+    Solo es accesible si el usuario ha iniciado sesión.
+    """
+    context = {
+        'user': request.user,
+    }
+    # Renderiza la nueva plantilla perfil_usuario.html
+    return render(request, 'perfil_usuario.html', context)
