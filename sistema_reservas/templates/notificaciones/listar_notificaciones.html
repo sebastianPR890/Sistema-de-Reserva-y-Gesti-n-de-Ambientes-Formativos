@@ -2,44 +2,57 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Mis Notificaciones</h1>
-        <div class="btn-group">
-            <a href="?estado=todas" class="btn btn-outline-primary {% if estado_filtro == 'todas' %}active{% endif %}">
-                Todas
-            </a>
-            <a href="?estado=no_leidas" class="btn btn-outline-primary {% if estado_filtro == 'no_leidas' %}active{% endif %}">
-                No leídas
-            </a>
-            <a href="?estado=leidas" class="btn btn-outline-primary {% if estado_filtro == 'leidas' %}active{% endif %}">
-                Leídas
-            </a>
+<div class="container-fluid" style="background: linear-gradient(135deg, #1e7e34 0%, #155724 100%); min-height: 100vh; padding: 30px;">
+    
+    <!-- Header Section -->
+    <div class="page-header mb-4 animate-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="mb-3 text-white fw-bold animate-title">
+                    <i class="fas fa-bell me-2"></i>
+                    Mis Notificaciones
+                </h1>
+                <div class="btn-group animate-buttons" role="group">
+                    <a href="?estado=todas" class="btn {% if estado_filtro == 'todas' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                        TODAS
+                    </a>
+                    <a href="?estado=no_leidas" class="btn {% if estado_filtro == 'no_leidas' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                        NO LEÍDAS
+                    </a>
+                    <a href="?estado=leidas" class="btn {% if estado_filtro == 'leidas' %}btn-primary{% else %}btn-outline-light{% endif %}">
+                        LEÍDAS
+                    </a>
+                </div>
+            </div>
+            
+            {% if notificaciones and no_leidas > 0 %}
+            <div class="animate-mark-button">
+                <button id="marcarTodasLeidas" class="btn btn-success btn-lg">
+                    <i class="fas fa-check-double"></i> MARCAR TODAS COMO LEÍDAS
+                </button>
+            </div>
+            {% endif %}
         </div>
     </div>
 
+    <!-- Notificaciones List -->
     {% if notificaciones %}
-        <div class="mb-3">
-            <button id="marcarTodasLeidas" class="btn btn-success">
-                <i class="fas fa-check-double"></i> Marcar todas como leídas
-            </button>
-        </div>
-
-        <div class="list-group">
+        <div class="notificaciones-container animate-cards">
             {% for notificacion in notificaciones %}
-            <div class="list-group-item list-group-item-action {% if not notificacion.leida %}active{% endif %}" 
-                id="notificacion-{{ notificacion.id }}">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ notificacion.titulo }}</h5>
-                    <small>{{ notificacion.fecha_de_creacion|timesince }}</small>
+            <div class="notificacion-card {% if not notificacion.leida %}notif-no-leida{% else %}notif-leida{% endif %} card-item" 
+                 id="notificacion-{{ notificacion.id }}"
+                 style="animation-delay: {{ forloop.counter0|add:'0'|floatformat:'1' }}s">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="mb-0 fw-bold">{{ notificacion.titulo }}</h5>
+                    <small class="ms-3">{{ notificacion.fecha_de_creacion|timesince }}</small>
                 </div>
-                <p class="mb-1">{{ notificacion.mensaje }}</p>
-                <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-2">{{ notificacion.mensaje }}</p>
+                <div class="d-flex justify-content-between align-items-center pt-2">
                     <small>Tipo: {{ notificacion.get_tipo_display }}</small>
                     {% if not notificacion.leida %}
                     <button class="btn btn-sm btn-light marcar-leida" 
                             data-id="{{ notificacion.id }}">
-                        Marcar como leída
+                        MARCAR COMO LEÍDA
                     </button>
                     {% endif %}
                 </div>
@@ -47,15 +60,16 @@
             {% endfor %}
         </div>
 
+        <!-- Paginación -->
         {% if is_paginated %}
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; Primera</a>
+                    <a class="page-link" href="?page=1&estado={{ estado_filtro }}">&laquo; Primera</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&estado={{ estado_filtro }}">Anterior</a>
                 </li>
                 {% endif %}
 
@@ -67,48 +81,246 @@
 
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&estado={{ estado_filtro }}">Siguiente</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&estado={{ estado_filtro }}">Última &raquo;</a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
         {% endif %}
     {% else %}
-        <div class="alert alert-info">
-            No hay notificaciones para mostrar.
+        <div class="alert alert-light text-center p-5">
+            <i class="fas fa-bell-slash fa-3x mb-3 text-muted"></i>
+            <h4 class="text-muted">No hay notificaciones para mostrar</h4>
         </div>
     {% endif %}
+
 </div>
 
-{% block extra_js %}
+<style>
+/* Animaciones de entrada */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Aplicar animaciones */
+.animate-title {
+    animation: slideDown 0.6s ease-out;
+}
+
+.animate-buttons {
+    animation: slideDown 0.8s ease-out;
+}
+
+.animate-mark-button {
+    animation: slideDown 1s ease-out;
+}
+
+.animate-cards {
+    animation: slideUp 0.8s ease-out;
+}
+
+.card-item {
+    animation: slideUp 0.6s ease-out both;
+}
+
+/* Container de notificaciones */
+.notificaciones-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Tarjeta de notificación */
+.notificacion-card {
+    padding: 20px 25px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notificacion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Notificación NO leída - Azul */
+.notif-no-leida {
+    background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+    color: white;
+}
+
+.notif-no-leida h5,
+.notif-no-leida p,
+.notif-no-leida small {
+    color: white;
+}
+
+/* Notificación LEÍDA - Gris oscuro */
+.notif-leida {
+    background: linear-gradient(135deg, #424242 0%, #212121 100%);
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.85;
+}
+
+.notif-leida h5,
+.notif-leida p,
+.notif-leida small {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Botón marcar como leída */
+.btn-light {
+    background-color: white;
+    color: #1565c0;
+    border: none;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+    background-color: #f5f5f5;
+    transform: scale(1.05);
+}
+
+/* Botones del header */
+.btn-outline-light {
+    color: white;
+    border-color: white;
+}
+
+.btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-color: white;
+}
+
+/* Paginación */
+.pagination .page-link {
+    color: #155724;
+    border-color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1565c0;
+    border-color: #1565c0;
+}
+</style>
+
 <script>
-$(document).ready(function() {
-    // Marcar una notificación individual como leída
-    $('.marcar-leida').click(function() {
-        const id = $(this).data('id');
-        $.post(`/notificaciones/${id}/marcar_leida/`, {
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-        })
-        .done(function() {
-            $(`#notificacion-${id}`).removeClass('active');
-            $(`#notificacion-${id} .marcar-leida`).remove();
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    // Marcar notificación individual
+    document.querySelectorAll('.marcar-leida').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const card = document.getElementById(`notificacion-${id}`);
+            
+            fetch(`/notificaciones/${id}/marcar_leida/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cambiar de azul a gris
+                    card.classList.remove('notif-no-leida');
+                    card.classList.add('notif-leida');
+                    // Remover botón
+                    this.remove();
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
     });
 
-    // Marcar todas las notificaciones como leídas
-    $('#marcarTodasLeidas').click(function() {
-        $.post('/notificaciones/marcar_todas_leidas/', {
-            'csrfmiddlewaretoken': '{{ csrf_token }}'
-        })
-        .done(function() {
-            $('.list-group-item').removeClass('active');
-            $('.marcar-leida').remove();
+    // Marcar todas
+    const btnTodas = document.getElementById('marcarTodasLeidas');
+    if (btnTodas) {
+        btnTodas.addEventListener('click', function() {
+            if (!confirm('¿Estás seguro de marcar todas las notificaciones como leídas?')) {
+                return;
+            }
+
+            fetch('/notificaciones/marcar_todas_leidas/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cambiar todas de azul a gris
+                    document.querySelectorAll('.notif-no-leida').forEach(card => {
+                        card.classList.remove('notif-no-leida');
+                        card.classList.add('notif-leida');
+                    });
+                    // Remover todos los botones
+                    document.querySelectorAll('.marcar-leida').forEach(btn => btn.remove());
+                    // Ocultar botón "Marcar todas"
+                    this.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
-    });
+    }
 });
 </script>
-{% endblock %}
 {% endblock %}

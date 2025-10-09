@@ -4,16 +4,23 @@ from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from .models import Notificacion
 
 @login_required
 def listar_notificaciones(request):
     todas_notificaciones = request.user.notificaciones.all()
     estado_filtro = request.GET.get('estado', 'todas')
+    
     if estado_filtro == 'no_leidas':
         todas_notificaciones = todas_notificaciones.filter(leida=False)
     elif estado_filtro == 'leidas':
         todas_notificaciones = todas_notificaciones.filter(leida=True)
+
+    # Contadores para mostrar en la interfaz
+    total_notificaciones = request.user.notificaciones.count()
+    no_leidas = request.user.notificaciones.filter(leida=False).count()
+    leidas = request.user.notificaciones.filter(leida=True).count()
 
     paginator = Paginator(todas_notificaciones, 10)
     page = request.GET.get('page')
@@ -23,34 +30,53 @@ def listar_notificaciones(request):
     except (PageNotAnInteger, TypeError):
         notificaciones = paginator.page(1)
     except EmptyPage:
-        notificaciones = paginator.page(paginator.num_pages) # Carga la última página si el número es inválido
+        notificaciones = paginator.page(paginator.num_pages)
     
     context = {
         'notificaciones': notificaciones,
         'estado_filtro': estado_filtro,
-        'title': 'mis notificaciones',
+        'title': 'Mis Notificaciones',
+        'total_notificaciones': total_notificaciones,
+        'no_leidas': no_leidas,
+        'leidas': leidas,
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': notificaciones,
     }
     return render(request, 'notificaciones/listar_notificaciones.html', context)
 
 @login_required
 @require_POST
-def marcar_como_leida(request,pk):
+def marcar_como_leida(request, pk):
     try:
         notificacion = request.user.notificaciones.get(pk=pk)
         if not notificacion.leida:
             notificacion.marcar_como_leida()
-            return JsonResponse({'success': True, 'message': 'Notificación marcada como leída.'})
-        return JsonResponse({'success': False, 'message': 'La notificación ya estaba marcada como leída.'})
+            return JsonResponse({
+                'success': True, 
+                'message': 'Notificación marcada como leída.'
+            })
+        return JsonResponse({
+            'success': False, 
+            'message': 'La notificación ya estaba marcada como leída.'
+        })
     except Notificacion.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Notificación no encontrada o no pertenece al usuario.'}, status=404)
+        return JsonResponse({
+            'success': False, 
+            'message': 'Notificación no encontrada o no pertenece al usuario.'
+        }, status=404)
 
 @login_required
 @require_POST
 def marcar_como_leidas_masiva(request):
-    request.user.notificaciones.filter(leida=False).update(leida=True)
-    messages.success(request, 'Todas tus notificaciones han sido marcadas como leídas.')
+    actualizadas = request.user.notificaciones.filter(leida=False).update(leida=True)
+    messages.success(request, f'{actualizadas} notificaciones marcadas como leídas.')
+    
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'message': 'Todas tus notificaciones han sido marcadas como leídas.'})
+        return JsonResponse({
+            'success': True, 
+            'message': f'{actualizadas} notificaciones marcadas como leídas.',
+            'actualizadas': actualizadas
+        })
     return redirect('notificaciones:listar_notificaciones')
 
 @login_required
