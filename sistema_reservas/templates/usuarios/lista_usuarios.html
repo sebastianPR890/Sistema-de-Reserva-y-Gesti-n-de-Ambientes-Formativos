@@ -1,40 +1,123 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Usuarios</title>
-    <style>
-        body { font-family: sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
-</head>
-<body>
-    <h1>Usuarios del Sistema</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre Completo</th>
-                <th>Documento</th>
-                <th>Email</th>
-                <th>Rol</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for usuario in usuarios %}
-            <tr>
-                <td><a href="{% url 'usuarios:detalle_usuario' usuario.pk %}">{{ usuario.nombre_completo }}</a></td>
-                <td>{{ usuario.documento }}</td>
-                <td>{{ usuario.email }}</td>
-                <td>{{ usuario.get_rol_display }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">No hay usuarios registrados.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* Estilos para el contenedor principal de la tabla */
+    .custom-card {
+        background-color: #fff; /* Fondo blanco para la tarjeta */
+        border-radius: 0.5rem; /* Bordes ligeramente redondeados */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        padding: 2rem; /* Espaciado interno */
+        margin-top: 2rem; /* Margen superior para separarlo del contenido de arriba si lo hubiera */
+        margin-left: 2rem; /* Margen izquierdo para no chocar con el sidebar */
+        margin-right: 2rem; /* Margen derecho */
+        flex-grow: 1; /* Para que ocupe el espacio disponible si está dentro de un flex container */
+        max-width: calc(100% - 4rem); /* Ajusta el ancho para los márgenes */
+    }
+
+    /* Estilos para el título principal */
+    .custom-card h1 {
+        font-size: 1.8rem;
+        color: #333; /* Color de texto oscuro para el título */
+        margin-bottom: 1.5rem; /* Espacio debajo del título */
+        padding-bottom: 0.5rem; /* Pequeño padding inferior */
+        border-bottom: 2px solid #e0e0e0; /* Línea sutil debajo del título */
+        display: flex; /* Para alinear el icono si se agrega */
+        align-items: center;
+    }
+
+    .custom-card h1 .icon {
+        margin-right: 0.8rem; /* Espacio entre el icono y el texto */
+        color: #4CAF50; /* Color del icono, similar al verde de tu UI */
+    }
+
+    /* Estilos para la tabla */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse; /* Bordes de celdas pegados */
+        margin-top: 1rem;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 12px 15px; /* Espaciado interno de celdas */
+        text-align: left;
+        border-bottom: 1px solid #eee; /* Línea divisoria suave entre filas */
+    }
+
+    .custom-table th {
+        background-color: #f8f8f8; /* Fondo ligeramente gris para las cabeceras */
+        color: #555; /* Color de texto oscuro para las cabeceras */
+        font-weight: 600; /* Texto de cabecera más audaz */
+        text-transform: uppercase; /* Texto de cabecera en mayúsculas */
+        font-size: 0.9rem;
+    }
+
+    .custom-table tbody tr:hover {
+        background-color: #f5f5f5; /* Efecto hover sutil en las filas */
+    }
+
+    /* Estilo para los enlaces en la tabla */
+    .custom-table td a {
+        color: #4CAF50; /* Color verde para los enlaces */
+        text-decoration: none; /* Quitar subrayado */
+        font-weight: 500;
+    }
+
+    .custom-table td a:hover {
+        text-decoration: underline; /* Subrayado al pasar el ratón */
+    }
+
+    /* Estilos para el mensaje de "No hay usuarios" */
+    .no-users-message {
+        text-align: center;
+        padding: 2rem;
+        color: #777;
+        font-style: italic;
+        background-color: #f9f9f9;
+        border-radius: 0.4rem;
+        margin-top: 1.5rem;
+        border: 1px solid #eee;
+    }
+</style>
+
+<div class="custom-card">
+    <h1>
+        <i class="fas fa-users icon"></i> {# Icono de Font Awesome, si lo tienes #}
+        Usuarios del Sistema
+    </h1>
+
+    {% if usuarios %}
+    <div class="table-responsive"> {# Si usas Bootstrap, esto ayuda en pantallas pequeñas #}
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <th>Documento</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    {# Si necesitas una columna de acciones, puedes añadirla aquí #}
+                    {# <th class="text-center">Acciones</th> #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td><a href="{% url 'usuarios:detalle_usuario' usuario.pk %}">{{ usuario.nombre_completo }}</a></td>
+                    <td>{{ usuario.documento }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.get_rol_display }}</td>
+                    {# Aquí irían los botones de acción si los añades #}
+                    {# <td class="text-center">...</td> #}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-users-message">
+        No hay usuarios registrados en el sistema.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

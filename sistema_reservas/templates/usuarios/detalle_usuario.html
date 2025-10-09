@@ -1,20 +1,148 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Detalle de Usuario: {{ usuario.nombre_completo }}</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; }
-    </style>
-</head>
-<body>
-    <h1>{{ usuario.nombre_completo }}</h1>
-    <p><strong>Documento:</strong> {{ usuario.documento }}</p>
-    <p><strong>Email:</strong> {{ usuario.email }}</p>
-    <p><strong>Teléfono:</strong> {{ usuario.telefono|default:"No especificado" }}</p>
-    <p><strong>Rol:</strong> {{ usuario.get_rol_display }}</p>
-    <p><strong>Miembro desde:</strong> {{ usuario.date_joined|date:"d/m/Y" }}</p>
+{% extends 'base.html' %}
 
-    <a href="{% url 'usuarios:lista_usuarios' %}">Volver a la lista</a>
-</body>
-</html>
+{% block content %}
+<style>
+    /* Estilos del Contenedor Principal (Tarjeta de Perfil) */
+    .profile-card {
+        background-color: #fff;
+        border-radius: 0.75rem; /* Bordes un poco más redondeados para el perfil */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sombra suave pero visible */
+        padding: 2.5rem;
+        margin: 2rem auto; /* Centrar la tarjeta en la pantalla */
+        max-width: 600px; /* Limitar el ancho para que se vea como una tarjeta de perfil */
+        animation: fadeIn 0.5s ease-out; /* Animación de entrada sutil */
+    }
+
+    /* Keyframes para la animación (opcional, pero mejora la UX) */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Estilo del Encabezado/Título */
+    .profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 1.5rem;
+    }
+
+    .profile-header h1 {
+        font-size: 2rem;
+        color: #333;
+        margin-top: 0.5rem;
+        font-weight: 700;
+    }
+
+    /* Ícono o Avatar (simulado con un ícono de usuario) */
+    .profile-icon {
+        font-size: 3.5rem;
+        color: #4CAF50; /* Color de acento verde */
+        background-color: #e8f5e9; /* Fondo muy claro para el ícono */
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        margin: 0 auto 1rem;
+        display: block;
+    }
+
+    /* Lista de Detalles del Usuario */
+    .detail-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 2rem;
+    }
+
+    .detail-list li {
+        display: flex; /* Usar flexbox para alinear etiqueta y valor */
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 1rem;
+    }
+
+    .detail-list li:last-child {
+        border-bottom: none; /* Eliminar borde en el último elemento */
+    }
+
+    .detail-list .label {
+        font-weight: 600;
+        color: #555;
+        display: flex;
+        align-items: center;
+    }
+
+    .detail-list .value {
+        color: #333;
+        text-align: right;
+    }
+
+    /* Iconos pequeños junto a las etiquetas (si usas Font Awesome) */
+    .detail-list .label i {
+        margin-right: 10px;
+        color: #7CB342; /* Un tono de verde sutil */
+    }
+
+    /* Estilo del botón de Volver */
+    .back-link {
+        display: inline-block;
+        margin-top: 2.5rem;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 0.4rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-link:hover {
+        background-color: #689F38; /* Un verde más oscuro al pasar el ratón */
+    }
+</style>
+
+<div class="profile-card">
+    <div class="profile-header">
+        <i class="fas fa-user-circle profile-icon"></i> {# Ícono de perfil de Font Awesome #}
+        <h1>{{ usuario.nombre_completo }}</h1>
+    </div>
+
+    <ul class="detail-list">
+        <li>
+            <span class="label">
+                <i class="fas fa-id-card"></i> Documento:
+            </span>
+            <span class="value">{{ usuario.documento }}</span>
+        </li>
+        <li>
+            <span class="label">
+                <i class="fas fa-envelope"></i> Email:
+            </span>
+            <span class="value">{{ usuario.email }}</span>
+        </li>
+        <li>
+            <span class="label">
+                <i class="fas fa-phone"></i> Teléfono:
+            </span>
+            <span class="value">{{ usuario.telefono|default:"No especificado" }}</span>
+        </li>
+        <li>
+            <span class="label">
+                <i class="fas fa-briefcase"></i> Rol:
+            </span>
+            <span class="value">{{ usuario.get_rol_display }}</span>
+        </li>
+        <li>
+            <span class="label">
+                <i class="fas fa-calendar-alt"></i> Miembro desde:
+            </span>
+            <span class="value">{{ usuario.date_joined|date:"d/m/Y" }}</span>
+        </li>
+    </ul>
+
+    <a href="{% url 'usuarios:lista_usuarios' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+    </a>
+</div>
+{% endblock %}
