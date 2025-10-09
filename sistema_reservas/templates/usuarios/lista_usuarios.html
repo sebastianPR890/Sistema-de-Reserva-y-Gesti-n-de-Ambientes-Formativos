@@ -2,6 +2,61 @@
 
 {% block content %}
 <style>
+    /* Keyframes para animaciones */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px); /* Empieza 20px arriba */
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0); /* Termina en su posición normal */
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0); /* Asegurarse de que no haya traslación para fadeIn simple */
+        }
+    }
+
+    /* Estilos para el título principal del sistema (fuera de la tarjeta) */
+    .page-title { /* Nueva clase para el h1 fuera de la tarjeta */
+        /* Animación de entrada para el título */
+        animation: fadeInDown 0.7s ease-out forwards;
+        opacity: 0; /* Iniciar invisible */
+        /* Mantener los estilos existentes del h1 */
+        margin-bottom: 0.5rem;
+        color: #fff;
+        font-weight: bold;
+        display: flex; /* Para alinear el icono */
+        align-items: center;
+        margin-left: 2rem; /* Alineado con el custom-card */
+        margin-top: 1rem; /* Margen superior para separarlo */
+    }
+
+    /* Estilo para el icono del título principal del sistema */
+    .page-title .profile-icon {
+        margin-right: 0.8rem;
+        color: #fff; /* Color del icono, si es parte del H1 y es blanco */
+    }
+
+
     /* Estilos para el contenedor principal de la tabla */
     .custom-card {
         background-color: #fff; /* Fondo blanco para la tarjeta */
@@ -13,9 +68,14 @@
         margin-right: 2rem; /* Margen derecho */
         flex-grow: 1; /* Para que ocupe el espacio disponible si está dentro de un flex container */
         max-width: calc(100% - 4rem); /* Ajusta el ancho para los márgenes */
+        /* Animación de entrada para la tarjeta */
+        animation: fadeInUp 0.6s ease-out forwards; /* forwards mantiene el estado final */
+        opacity: 0; /* Iniciar invisible para la animación */
+        animation-delay: 0.2s; /* Un ligero retraso para que aparezca después del título */
     }
 
-    /* Estilos para el título principal */
+    /* Estilos para el título principal DENTRO de la tarjeta (si hubiera, no aplicaría aquí directamente) */
+    /* Lo mantengo por si acaso lo refieres a un h1 dentro de custom-card, pero tu código actual tiene el h1 fuera */
     .custom-card h1 {
         font-size: 1.8rem;
         color: #333; /* Color de texto oscuro para el título */
@@ -53,6 +113,12 @@
         font-size: 0.9rem;
     }
 
+    /* Las filas iniciarán invisibles y con la animación, el delay se aplicará con JS */
+    .custom-table tbody tr {
+        animation: fadeIn 0.4s ease-out forwards;
+        opacity: 0; /* Iniciar invisible */
+    }
+
     .custom-table tbody tr:hover {
         background-color: #f5f5f5; /* Efecto hover sutil en las filas */
     }
@@ -78,17 +144,23 @@
         border-radius: 0.4rem;
         margin-top: 1.5rem;
         border: 1px solid #eee;
+        /* Animación de entrada para el mensaje */
+        animation: fadeIn 0.6s ease-out forwards;
+        opacity: 0; /* Iniciar invisible */
+        animation-delay: 0.3s; /* Aparecer después de un pequeño retraso */
     }
+
 </style>
 
-<div class="custom-card">
-    <h1>
-        <i class="fas fa-users icon"></i> {# Icono de Font Awesome, si lo tienes #}
-        Usuarios del Sistema
-    </h1>
 
+<h1 class="page-title"> {# Se añade la clase page-title #}
+    <i class="fas fa-user-circle profile-icon"></i>
+    Usuarios del sistema
+</h1>
+
+<div class="custom-card">
     {% if usuarios %}
-    <div class="table-responsive"> {# Si usas Bootstrap, esto ayuda en pantallas pequeñas #}
+    <div class="table-responsive"> 
         <table class="custom-table">
             <thead>
                 <tr>
@@ -96,8 +168,8 @@
                     <th>Documento</th>
                     <th>Email</th>
                     <th>Rol</th>
-                    {# Si necesitas una columna de acciones, puedes añadirla aquí #}
-                    {# <th class="text-center">Acciones</th> #}
+                    
+                    
                 </tr>
             </thead>
             <tbody>
@@ -107,8 +179,7 @@
                     <td>{{ usuario.documento }}</td>
                     <td>{{ usuario.email }}</td>
                     <td>{{ usuario.get_rol_display }}</td>
-                    {# Aquí irían los botones de acción si los añades #}
-                    {# <td class="text-center">...</td> #}
+                    
                 </tr>
                 {% endfor %}
             </tbody>
@@ -120,4 +191,17 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableRows = document.querySelectorAll('.custom-table tbody tr');
+        const initialDelay = 0.5; // Retraso inicial para que las filas empiecen a animarse (después del título y la tarjeta)
+        const rowDelay = 0.1;     // Retraso entre cada fila
+
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = `${initialDelay + (index * rowDelay)}s`;
+        });
+    });
+</script>
+
 {% endblock %}
