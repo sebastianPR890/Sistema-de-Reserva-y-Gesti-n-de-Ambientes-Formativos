@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<head>
+    <!-- Se establece la codificación de caracteres -->
+    <meta charset="UTF-8">
+    <!-- Se configura el viewport para que la página sea responsiva en dispositivos móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título de la página -->
+    <title>Recuperación de Contraseña</title>
+</head>
+<body>
+    <p>Hola {{ username }},</p>
+
+<p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p>
+
+<a href="{{ reset_url }}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+    Restablecer Contraseña
+</a>
+
+<p>Si no puedes hacer clic en el botón, copia y pega este enlace en tu navegador:</p>
+<p>{{ reset_url }}</p>
+{% endblock %}

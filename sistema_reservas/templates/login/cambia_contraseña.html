@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cambiar Contraseña - SENA APP{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="login-container text-center">
+        
+        <h2 class="text-white mb-4 animate__animated animate__fadeInDown fw-bold display-6">
+            <i class="fas fa-lock me-2"></i> Restablecer Acceso
+        </h2>
+
+        <div class="login-card p-4 p-md-5 shadow-lg rounded-3"> 
+            
+            <p class="text-muted mb-4">Ingresa tu nueva contraseña segura a continuación.</p>
+            
+            {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div> 
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form class="reset-form" method="POST" onsubmit="return validatePasswordChange()">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label for="new_password" class="form-label text-start d-block">Nueva Contraseña</label>
+                    <div class="password-toggle input-group"> 
+                        <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        <input type="password" name="new_password" id="new_password" class="form-control" placeholder="Mínimo 12 caracteres, Mayús, Especial" required>
+                        <span class="input-group-text" onclick="togglePassword(this.previousElementSibling)"><i class="fas fa-eye"></i></span>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="confirm_password" class="form-label text-start d-block">Confirmar Contraseña</label>
+                    <div class="password-toggle input-group">
+                        <span class="input-group-text"><i class="fas fa-redo"></i></span>
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Repite la nueva contraseña" required>
+                        <span class="input-group-text" onclick="togglePassword(this.previousElementSibling)"><i class="fas fa-eye"></i></span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-success btn-lg btn-block mt-3">
+                    <i class="fas fa-check-circle me-2"></i> Finalizar Cambio
+                </button>
+            </form>
+            
+            <hr class="my-4">
+
+            <a href="{% url 'login:login' %}" class="back-link text-decoration-none text-success-emphasis fw-bold">
+                <i class="fas fa-arrow-left me-1"></i> Volver al Login
+            </a>
+
+        </div> </div> </div>
+
+<script>
+    // --- Lógica de Validación (Mantenida) ---
+    function validatePasswordChange() {
+        var newPassword = document.getElementById('new_password').value;
+        var confirmPassword = document.getElementById('confirm_password').value;
+        var regex = /^(?=.*[A-Z])(?=.*[@!|./&]).{12,}$/;
+        
+        if (!regex.test(newPassword)) {
+            alert("⚠️ La contraseña debe tener mínimo 12 caracteres, 1 letra mayúscula y un carácter especial (@!|./&).");
+            return false;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            alert("❌ Las contraseñas no coinciden.");
+            return false;
+        }
+        
+        return confirm("✅ ¿Estás seguro de cambiar tu contraseña?");
+    }
+    
+    // --- Lógica de Mostrar/Ocultar Contraseña (Mejorada para input-group) ---
+    function togglePassword(inputElement) {
+        // El input es el elemento que se pasa a la función (previousElementSibling)
+        const icon = inputElement.nextElementSibling;
+
+        if (inputElement.type === 'password') {
+            inputElement.type = 'text';
+            icon.querySelector('i').classList.remove('fa-eye');
+            icon.querySelector('i').classList.add('fa-eye-slash');
+        } else {
+            inputElement.type = 'password';
+            icon.querySelector('i').classList.remove('fa-eye-slash');
+            icon.querySelector('i').classList.add('fa-eye');
+        }
+    }
+</script>
+{% endblock content %}
