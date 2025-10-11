@@ -1,18 +1,52 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+
+from .forms import BusquedaUsuarioForm
 from .models import Usuario
+from django.db.models import Q 
 
 def es_admin(user):
     return user.is_staff
 
-# Create your views here.
 @login_required
 @user_passes_test(es_admin)
 def lista_usuarios(request):
-    """Vista para listar usuarios - solo accesible por administradores"""
-    usuarios = Usuario.objects.filter(activo=True).order_by('apellidos', 'nombres')
-    context = {'usuarios': usuarios}
+    """Vista para listar, buscar y filtrar usuarios - solo accesible por administradores"""
+    
+    # 1. Inicializa el QuerySet de usuarios activos
+    usuarios = Usuario.objects.filter(activo=True).order_by('apellidos', 'nombres') 
+    
+    # 2. Inicializa el formulario de búsqueda con los parámetros GET
+    form_busqueda = BusquedaUsuarioForm(request.GET)
+    
+    # 3. Aplica los filtros SOLO si el formulario es válido
+    if form_busqueda.is_valid():
+        cleaned_data = form_busqueda.cleaned_data
+        
+        # 1. Filtro de Búsqueda por Texto (Nombre, Apellidos o Documento)
+        # *** CLAVE DE LA CORRECCIÓN: Usar .get() para evitar KeyError ***
+        busqueda = cleaned_data.get('busqueda') 
+        if busqueda:
+            # Filtra por nombres, apellidos o documento (búsqueda combinada OR)
+            usuarios = usuarios.filter(
+                Q(nombres__icontains=busqueda) | 
+                Q(apellidos__icontains=busqueda) | 
+                Q(documento__icontains=busqueda) 
+            )
+            
+        # 2. Filtro por Rol
+        # *** CLAVE DE LA CORRECCIÓN: Usar .get() ***
+        rol = cleaned_data.get('rol') 
+        # El campo rol del formulario devuelve una cadena vacía ('') si se selecciona 'Todos los Roles'
+        if rol: 
+            usuarios = usuarios.filter(rol=rol)
+
+    context = {
+        'usuarios': usuarios,
+        'form_busqueda': form_busqueda # Pasar el formulario al template
+    }
+    
     return render(request, 'usuarios/lista_usuarios.html', context)
 
 @login_required
