@@ -7,5 +7,6 @@ urlpatterns = [
     path('', views.lista_usuarios, name='lista_usuarios'),
     path('<int:pk>/', views.detalle_usuario, name='detalle_usuario'),
     path('perfil/', views.perfil_usuario, name='perfil'),
+    path('editar_perfil/', views.editar_perfil, name='editar_perfil'),
     # Aquí puedes añadir URLs para crear, editar y eliminar usuarios en el futuro
 ]

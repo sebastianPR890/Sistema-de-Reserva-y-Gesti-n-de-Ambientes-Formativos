@@ -2,7 +2,18 @@
 
 {% block content %}
 <style>
-    /* Keyframes para animaciones */
+    /* Animaciones */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -14,262 +25,491 @@
         }
     }
 
-    @keyframes fadeInDown {
+    @keyframes slideInLeft {
         from {
             opacity: 0;
-            transform: translateY(-20px); /* Empieza 20px arriba */
+            transform: translateX(-20px);
         }
         to {
             opacity: 1;
-            transform: translateY(0); /* Termina en su posición normal */
+            transform: translateX(0);
         }
     }
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0); /* Asegurarse de que no haya traslación para fadeIn simple */
-        }
+    /* Contenedor principal */
+    .users-container {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
-    /* Estilos para el título principal del sistema (fuera de la tarjeta) */
-    .page-title { /* Nueva clase para el h1 fuera de la tarjeta */
-        /* Animación de entrada para el título */
-        animation: fadeInDown 0.7s ease-out forwards;
-        opacity: 0; /* Iniciar invisible */
-        /* Mantener los estilos existentes del h1 */
-        margin-bottom: 0.5rem;
+    /* Header de la página */
+    .page-header {
+        margin-bottom: 2rem;
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
         color: #fff;
-        font-weight: bold;
-        display: flex; /* Para alinear el icono */
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-title i {
+        font-size: 2.5rem;
+        color: #fff;
+    }
+
+    .page-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        margin-left: 3.5rem;
+    }
+
+    /* Barra de búsqueda y acciones */
+    .actions-bar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(57, 169, 0, 0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        margin-left: 2rem; /* Alineado con el custom-card */
-        margin-top: 1rem; /* Margen superior para separarlo */
+        gap: 1rem;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.6s ease-out;
+        animation-delay: 0.1s;
+        opacity: 0;
+        animation-fill-mode: forwards;
     }
 
-    /* Estilo para el icono del título principal del sistema */
-    .page-title .profile-icon {
-        margin-right: 0.8rem;
-        color: #fff; /* Color del icono, si es parte del H1 y es blanco */
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
     }
 
-
-    /* Estilos para el contenedor principal de la tabla */
-    .custom-card {
-        background-color: #fff; /* Fondo blanco para la tarjeta */
-        border-radius: 0.5rem; /* Bordes ligeramente redondeados */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-        padding: 2rem; /* Espaciado interno */
-        margin-top: 2rem; /* Margen superior para separarlo del contenido de arriba si lo hubiera */
-        margin-left: 2rem; /* Margen izquierdo para no chocar con el sidebar */
-        margin-right: 2rem; /* Margen derecho */
-        flex-grow: 1; /* Para que ocupe el espacio disponible si está dentro de un flex container */
-        max-width: calc(100% - 4rem); /* Ajusta el ancho para los márgenes */
-        /* Animación de entrada para la tarjeta */
-        animation: fadeInUp 0.6s ease-out forwards; /* forwards mantiene el estado final */
-        opacity: 0; /* Iniciar invisible para la animación */
-        animation-delay: 0.2s; /* Un ligero retraso para que aparezca después del título */
-    }
-
-    /* Estilos para el título principal DENTRO de la tarjeta (si hubiera, no aplicaría aquí directamente) */
-    .custom-card h1 {
-        font-size: 1.8rem;
-        color: #333; /* Color de texto oscuro para el título */
-        margin-bottom: 1.5rem; /* Espacio debajo del título */
-        padding-bottom: 0.5rem; /* Pequeño padding inferior */
-        border-bottom: 2px solid #e0e0e0; /* Línea sutil debajo del título */
-        display: flex; /* Para alinear el icono si se agrega */
-        align-items: center;
-    }
-
-    .custom-card h1 .icon {
-        margin-right: 0.8rem; /* Espacio entre el icono y el texto */
-        color: #4CAF50; /* Color del icono, similar al verde de tu UI */
-    }
-
-    /* Estilos para la tabla */
-    .custom-table {
+    .search-box input {
         width: 100%;
-        border-collapse: collapse; /* Bordes de celdas pegados */
-        margin-top: 1rem;
+        padding: 0.8rem 1rem 0.8rem 2.8rem;
+        border: 2px solid #e8f5e9;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
     }
 
-    .custom-table th,
-    .custom-table td {
-        padding: 12px 15px; /* Espaciado interno de celdas */
+    .search-box input:focus {
+        outline: none;
+        border-color: #39a900;
+        box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.1);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.8rem 1.2rem;
+        border: 2px solid #e8f5e9;
+        background: white;
+        color: #666;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: linear-gradient(135deg, #39a900 0%, #4ece00 100%);
+        color: white;
+        border-color: #39a900;
+    }
+
+    /* Tarjeta de la tabla */
+    .users-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 20px rgba(57, 169, 0, 0.08);
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+        animation-delay: 0.2s;
+        opacity: 0;
+        animation-fill-mode: forwards;
+    }
+
+    /* Estadísticas rápidas */
+    .stats-bar {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f0f9f0 100%);
+        padding: 1.2rem 2rem;
+        display: flex;
+        justify-content: space-around;
+        border-bottom: 2px solid #e8f5e9;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #39a900;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.3rem;
+    }
+
+    /* Tabla moderna */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table thead {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .modern-table th {
+        padding: 1.2rem 1.5rem;
         text-align: left;
-        border-bottom: 1px solid #eee; /* Línea divisoria suave entre filas */
+        font-weight: 700;
+        color: #2d3748;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e8f5e9;
     }
 
-    .custom-table th {
-        background-color: #f8f8f8; /* Fondo ligeramente gris para las cabeceras */
-        color: #555; /* Color de texto oscuro para las cabeceras */
-        font-weight: 600; /* Texto de cabecera más audaz */
-        text-transform: uppercase; /* Texto de cabecera en mayúsculas */
-        font-size: 0.9rem;
+    .modern-table tbody tr {
+        animation: slideInLeft 0.4s ease-out forwards;
+        opacity: 0;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f0f0f0;
     }
 
-    /* Las filas iniciarán invisibles y con la animación, el delay se aplicará con JS */
-    .custom-table tbody tr {
-        animation: fadeIn 0.4s ease-out forwards;
-        opacity: 0; /* Iniciar invisible */
+    .modern-table tbody tr:hover {
+        background: linear-gradient(to right, #f8fff8 0%, #ffffff 100%);
+        transform: translateX(5px);
+        box-shadow: -5px 0 0 #39a900;
     }
 
-    .custom-table tbody tr:hover {
-        background-color: #f5f5f5; /* Efecto hover sutil en las filas */
+    .modern-table td {
+        padding: 1.2rem 1.5rem;
+        color: #4a5568;
+        font-size: 0.95rem;
     }
 
-    /* Estilo para los enlaces en la tabla */
-    .custom-table td a {
-        color: #4CAF50; /* Color verde para los enlaces */
-        text-decoration: none; /* Quitar subrayado */
-        font-weight: 500;
+    /* Avatar en la tabla */
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #39a900 0%, #4ece00 100%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        margin-right: 1rem;
+        vertical-align: middle;
     }
 
-    .custom-table td a:hover {
-        text-decoration: underline; /* Subrayado al pasar el ratón */
+    /* Nombre del usuario con avatar */
+    .user-name-cell {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
-    /* Estilos para el mensaje de "No hay usuarios" */
+    .user-name-link {
+        color: #1e8449;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .user-name-link:hover {
+        color: #39a900;
+        text-decoration: underline;
+    }
+
+    /* Badge para roles */
+    .role-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    .role-badge.admin {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        color: white;
+    }
+
+    .role-badge.instructor {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .role-badge.aprendiz {
+        background: linear-gradient(135deg, #39a900 0%, #4ece00 100%);
+        color: white;
+    }
+
+    .role-badge.default {
+        background: linear-gradient(135deg, #a8a8a8 0%, #c0c0c0 100%);
+        color: white;
+    }
+
+    /* Botón de acción */
+    .action-btn {
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, #39a900 0%, #4ece00 100%);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(57, 169, 0, 0.3);
+        color: white;
+    }
+
+    /* Mensaje sin usuarios */
     .no-users-message {
         text-align: center;
-        padding: 2rem;
-        color: #777;
-        font-style: italic;
-        background-color: #f9f9f9;
-        border-radius: 0.4rem;
-        margin-top: 1.5rem;
-        border: 1px solid #eee;
-        /* Animación de entrada para el mensaje */
-        animation: fadeIn 0.6s ease-out forwards;
-        opacity: 0; /* Iniciar invisible */
-        animation-delay: 0.3s; /* Aparecer después de un pequeño retraso */
+        padding: 4rem 2rem;
+        color: #666;
+        animation: fadeInUp 0.6s ease-out;
     }
 
-    /* Estilos para el Filtro de Búsqueda (search-card) */
-    .search-card {
-        background-color: #f8f9fa;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        animation: fadeInUp 0.5s ease-out forwards;
-        opacity: 0;
-        animation-delay: 0.7s; /* Inicia después del título */
-        margin-left: 2rem;
-        margin-right: 2rem;
-        max-width: calc(100% - 4rem);
+    .no-users-message i {
+        font-size: 4rem;
+        color: #c0c0c0;
+        margin-bottom: 1rem;
     }
 
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 1px solid #ced4da;
+    .no-users-message h3 {
+        color: #4a5568;
+        margin-bottom: 0.5rem;
     }
 
-    .btn-primary-custom {
-        background-color: #007bff;
-        border-color: #007bff;
-        border-radius: 8px;
-        transition: all 0.3s;
+    .no-users-message p {
+        color: #a0aec0;
     }
 
-    .btn-primary-custom:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-    
-    .btn-outline-secondary-custom {
-        border-radius: 8px;
-        border: 1px solid #6c757d;
-        color: #6c757d;
-        transition: all 0.3s;
-    }
-    
-    .btn-outline-secondary-custom:hover {
-        background-color: #6c757d;
-        color: white;
+    /* Responsive */
+    @media (max-width: 768px) {
+        .users-container {
+            padding: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .actions-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .filter-buttons {
+            width: 100%;
+            justify-content: stretch;
+        }
+
+        .filter-btn {
+            flex: 1;
+        }
+
+        .stats-bar {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .modern-table {
+            font-size: 0.85rem;
+        }
+
+        .modern-table th,
+        .modern-table td {
+            padding: 0.8rem;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            font-size: 0.9rem;
+        }
     }
 </style>
 
-<h1 class="page-title">
-    Usuarios del sistema
-</h1>
+<div class="users-container">
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-users"></i>
+            Usuarios del Sistema
+        </h1>
+        <p class="page-subtitle">Gestión y administración de usuarios registrados</p>
+    </div>
 
-<div class="search-card">
-    <form method="get" action="{% url 'usuarios:lista_usuarios' %}">
-        
-        <div class="row g-3">
-            <div class="col-md-5">
-                <label for="{{ form_busqueda.busqueda.id_for_label }}" class="form-label">
-                    <i class="fas fa-user-circle me-1"></i> {{ form_busqueda.busqueda.label }}
-                </label>
-                {{ form_busqueda.busqueda }}
+    <!-- Barra de acciones -->
+    <div class="actions-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, documento o email...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="instructor">Instructores</button>
+            <button class="filter-btn" data-filter="aprendiz">Aprendices</button>
+        </div>
+    </div>
+
+    <!-- Tarjeta de usuarios -->
+    <div class="users-card">
+        {% if usuarios %}
+        <!-- Estadísticas -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">{{ usuarios|length }}</div>
+                <div class="stat-label">Total Usuarios</div>
             </div>
-            <div class="col-md-4">
-                <label for="{{ form_busqueda.rol.id_for_label }}" class="form-label">
-                    <i class="fas fa-briefcase me-1"></i> {{ form_busqueda.rol.label }}
-                </label>
-                {{ form_busqueda.rol }}
+            <div class="stat-item">
+                <div class="stat-value">{{ usuarios|length }}</div>
+                <div class="stat-label">Activos</div>
             </div>
-            <div class="col-md-3 d-flex align-items-end gap-2">
-                <button type="submit" class="btn btn-primary-custom w-100">
-                    <i class="fas fa-search me-1"></i> Buscar
-                </button>
-                
-                <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-outline-secondary-custom w-100">
-                    <i class="fas fa-eraser me-1"></i> Limpiar
-                </a>
+            <div class="stat-item">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Nuevos este mes</div>
             </div>
         </div>
-        
-    </form>
-</div>
 
-<div class="custom-card">
-    {% if usuarios %}
-    <div class="table-responsive"> 
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>Nombre Completo</th>
-                    <th>Documento</th>
-                    <th>Email</th>
-                    <th>Rol</th>
+        <!-- Tabla -->
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Documento</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Acción</th>
                     </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr>
-                    <td><a href="{% url 'usuarios:detalle_usuario' usuario.pk %}">{{ usuario.nombre_completo }}</a></td>
-                    <td>{{ usuario.documento }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.get_rol_display }}</td>
+                </thead>
+                <tbody id="usersTableBody">
+                    {% for usuario in usuarios %}
+                    <tr data-role="{{ usuario.rol }}">
+                        <td>
+                            <div class="user-name-cell">
+                                <span class="user-avatar">{{ usuario.nombre_completo.0|upper }}</span>
+                                <a href="{% url 'usuarios:detalle_usuario' usuario.pk %}" class="user-name-link">
+                                    {{ usuario.nombre_completo }}
+                                </a>
+                            </div>
+                        </td>
+                        <td>{{ usuario.documento }}</td>
+                        <td>{{ usuario.email }}</td>
+                        <td>
+                            <span class="role-badge {% if usuario.rol == 'admin' %}admin{% elif usuario.rol == 'instructor' %}instructor{% elif usuario.rol == 'aprendiz' %}aprendiz{% else %}default{% endif %}">
+                                {{ usuario.get_rol_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'usuarios:detalle_usuario' usuario.pk %}" class="action-btn">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        </td>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-users-message">
+            <i class="fas fa-users-slash"></i>
+            <h3>No hay usuarios registrados</h3>
+            <p>Comienza agregando usuarios al sistema</p>
+        </div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="no-users-message">
-        No se encontraron usuarios que coincidan con los filtros aplicados.
-    </div>
-    {% endif %}
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Asegura que las filas se animen si existen
-        const tableRows = document.querySelectorAll('.custom-table tbody tr');
-        const initialDelay = 0.5; 
-        const rowDelay = 0.1;     
+        // Animación de filas de la tabla
+        const tableRows = document.querySelectorAll('.modern-table tbody tr');
+        const initialDelay = 0.5;
+        const rowDelay = 0.08;
 
         tableRows.forEach((row, index) => {
-            // El retraso total es el retraso inicial de la tabla (desde la tarjeta) más el retraso incremental por fila
-            // Se puede ajustar el initialDelay para que se coordine mejor con la animación de la tarjeta.
             row.style.animationDelay = `${initialDelay + (index * rowDelay)}s`;
+        });
+
+        // Búsqueda en tiempo real
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        // Filtros por rol
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover active de todos
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Agregar active al clickeado
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                tableRows.forEach(row => {
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else {
+                        const role = row.dataset.role;
+                        row.style.display = role === filter ? '' : 'none';
+                    }
+                });
+            });
         });
     });
 </script>

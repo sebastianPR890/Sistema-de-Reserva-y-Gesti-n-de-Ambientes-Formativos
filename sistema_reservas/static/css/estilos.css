@@ -759,3 +759,12 @@ body {
         display: none; /* No se necesita overlay */
     }
 }
+
+.sienna-btn {
+    left: auto !important;
+    right: 20px !important;
+}
+
+.sienna-btn.sienna-btn-default {
+    background-color: #1e7e34 !important;
+}
