@@ -16,20 +16,46 @@ def is_superuser_or_staff(user):
     return user.is_superuser or user.is_staff
 
 # Función auxiliar para obtener la lista de archivos de una carpeta
-def get_backup_files_from_dir(directory):
+def get_backup_files_from_dir(directory, search_name=None, search_date=None):
     files_list = []
-    # No es necesario crear la carpeta aquí, se hará en backup_status
     
     if os.path.exists(directory):
+        # 1. Obtener todos los archivos .zip y ordenarlos por fecha de modificación
         files = sorted(os.listdir(directory), key=lambda f: os.path.getmtime(os.path.join(directory, f)), reverse=True)
+        
         for f in files:
             file_path = os.path.join(directory, f)
+            
             if os.path.isfile(file_path) and f.endswith('.zip'):
-                files_list.append({
-                    'name': f,
-                    'size': round(os.path.getsize(file_path) / (1024 * 1024), 2), # MB
-                    'date': datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
-                })
+                
+                # 2. Obtener metadatos del archivo
+                file_date_timestamp = os.path.getmtime(file_path)
+                file_datetime_obj = datetime.datetime.fromtimestamp(file_date_timestamp)
+                file_date_str = file_datetime_obj.strftime('%Y-%m-%d')
+                
+                # --- Aplicar Filtros ---
+                match_name = True
+                match_date = True
+                
+                # Filtro por Nombre
+                if search_name and search_name.strip():
+                    if search_name.lower() not in f.lower():
+                        match_name = False
+                        
+                # Filtro por Fecha de Creación
+                if search_date and search_date.strip():
+                    # Compara solo la parte de la fecha (AAAA-MM-DD)
+                    if search_date != file_date_str:
+                        match_date = False
+                
+                # 3. Si el archivo coincide con todos los filtros, agregarlo a la lista
+                if match_name and match_date:
+                    files_list.append({
+                        'name': f,
+                        'size': round(os.path.getsize(file_path) / (1024 * 1024), 2), # MB
+                        'date': file_datetime_obj.strftime('%Y-%m-%d %H:%M:%S'),
+                        'date_short': file_date_str # Útil para pre-llenar el campo de fecha
+                    })
     return files_list
 
 
@@ -46,21 +72,42 @@ def run_backup(request):
 
     return render(request, 'backups/run_backup.html')
 
+# ... (código anterior) ...
+
 @user_passes_test(is_superuser_or_staff)
 def backup_status(request):
     # AÑADIR ESTO: Asegurarse de que ambas carpetas existen antes de intentar acceder a ellas
     os.makedirs(BACKUP_DIR, exist_ok=True)
     os.makedirs(TRASH_DIR, exist_ok=True)
+
+    # Obtener parámetros de búsqueda de la URL
+    search_name = request.GET.get('nombre', '').strip()
+    search_date = request.GET.get('fecha', '').strip()
     
-    # Obtener Backups Activos
-    backup_files = get_backup_files_from_dir(BACKUP_DIR)
+    # Obtener Backups Activos, aplicando filtros
+    backup_files = get_backup_files_from_dir(
+        BACKUP_DIR, 
+        search_name=search_name, 
+        search_date=search_date
+    )
     
-    # Obtener Backups Eliminados (Papelera)
-    deleted_files = get_backup_files_from_dir(TRASH_DIR)
+    # Obtener Backups Eliminados (Papelera), aplicando filtros
+    deleted_files = get_backup_files_from_dir(
+        TRASH_DIR, 
+        search_name=search_name, 
+        search_date=search_date
+    )
     
+    # Crear un diccionario para mantener los valores de filtro y rellenar el formulario
+    filter_data = {
+        'nombre': search_name,
+        'fecha': search_date,
+    }
+
     return render(request, 'backups/backup_status.html', {
         'backup_files': backup_files,
-        'deleted_files': deleted_files
+        'deleted_files': deleted_files,
+        'filter_data': filter_data, # Pasar los datos del filtro al template
     })
 
 

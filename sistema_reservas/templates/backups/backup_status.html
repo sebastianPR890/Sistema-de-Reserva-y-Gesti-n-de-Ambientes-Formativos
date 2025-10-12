@@ -1,6 +1,70 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+    /* 1. Estilos Base para el Título */
+    .page-title {
+        color: #fff;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        margin-left: 2rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* 2. Estilos para la Tarjeta de Búsqueda */
+    .search-card-backup {
+        background-color: #ffffff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 1rem 2rem 2rem 2rem; /* Margen para centrarla en el contenedor principal */
+    }
+    
+    .form-control, .form-select {
+        border-radius: 0.25rem;
+        border: 1px solid #ced4da;
+    }
+
+    /* 3. Estilos para los Botones */
+    .btn-search {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        border-radius: 0.25rem;
+        transition: all 0.3s;
+    }
+
+    .btn-search:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-clear {
+        border-radius: 0.25rem;
+        border: 1px solid #6c757d;
+        color: #6c757d;
+        transition: all 0.3s;
+    }
+    
+    .btn-clear:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    /* 4. Restaurar el Diseño de las Tablas */
+    /* El estilo table-striped de Bootstrap es suficiente, solo aseguramos el color de la tabla de Papelera */
+    .table-secondary th {
+        background-color: #e2e6ea !important; /* Un gris claro más limpio */
+    }
+    
+    /* Contenedor para alinear los mensajes */
+    .messages {
+        margin: 1rem 2rem;
+    }
+</style>
+
     {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -12,7 +76,52 @@
         </div>
     {% endif %}
 
-    <h2>Estado de Backups Activos</h2>
+<h1 class="page-title">
+    Gestión de Copias de Seguridad
+</h1>
+
+<div class="search-card-backup">
+    <form method="get" action="{% url 'backups:backup_status' %}">
+        
+        <div class="row g-3">
+            <div class="col-md-5">
+                <label for="id_nombre" class="form-label text-muted fw-bold">
+                    <i class="fas fa-file-archive me-1"></i> Buscar por Nombre
+                </label>
+                <input type="text" 
+                    class="form-control" 
+                    id="id_nombre" 
+                    name="nombre" 
+                    placeholder="Nombre del archivo (ej. db_backup_2025)"
+                    value="{{ filter_data.nombre|default:'' }}">
+            </div>
+            
+            <div class="col-md-4">
+                <label for="id_fecha" class="form-label text-muted fw-bold">
+                    <i class="fas fa-calendar-alt me-1"></i> Filtrar por Fecha
+                </label>
+                <input type="date" 
+                    class="form-control" 
+                    id="id_fecha" 
+                    name="fecha" 
+                    value="{{ filter_data.fecha|default:'' }}">
+            </div>
+            
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-search w-50">
+                    <i class="fas fa-search me-1"></i> Buscar
+                </button>
+                
+                <a href="{% url 'backups:backup_status' %}" class="btn btn-clear w-50">
+                    <i class="fas fa-eraser me-1"></i> Limpiar
+                </a>
+            </div>
+        </div>
+        
+    </form>
+</div>
+<div class="mx-4">
+    <h2>Estado de Backups Activos ({{ backup_files|length }})</h2>
     
     <table class="table table-striped">
         <thead>
@@ -45,17 +154,18 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">No hay backups activos disponibles.</td>
+                <td colspan="4">No hay backups activos disponibles o no coinciden con el filtro.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+<hr class="my-5 mx-4">
 
-    <hr class="my-5">
+<div class="mx-4">
+    <h2 class="mt-5"><i class="fas fa-trash-restore"></i> Papelera de Backups ({{ deleted_files|length }})</h2>
 
-    <h2 class="mt-5"><i class="fas fa-trash-restore"></i> Papelera de Backups</h2>
-
-    {% if deleted_files %}
+    
     <table class="table table-striped table-secondary">
         <thead>
             <tr>
@@ -80,11 +190,12 @@
                     </form>
                 </td>
             </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">La papelera está vacía o no se encontraron elementos que coincidan con el filtro.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
-    <p>La papelera está vacía.</p>
-    {% endif %}
-
+</div>
 {% endblock content %}
