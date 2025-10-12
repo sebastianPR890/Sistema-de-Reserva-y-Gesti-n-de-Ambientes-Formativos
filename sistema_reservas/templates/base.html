@@ -40,12 +40,22 @@
                 <a href="{% url 'ambientes:lista' %}" class="nav-link {% if request.resolver_match.app_name == 'ambientes' %}active{% endif %}"><i class="fas fa-door-open nav-icon"></i>Ambientes</a>
             </div>
             <div class="nav-item">
+                <!-- solo superuser-->
                 <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if request.resolver_match.app_name == 'usuarios' %}active{% endif %}"><i class="fas fa-users nav-icon"></i>Usuarios</a>
+                
             </div>
             <div class="nav-item">
                 <a href="{% url 'notificaciones:listar_notificaciones' %}" class="nav-link {% if request.resolver_match.app_name == 'notificaciones' %}active{% endif %}"><i class="fas fa-bell nav-icon"></i>Notificaciones</a>
             </div>
+            <!-- base de datos (backups)-->
             <div class="nav-item">
+                <a href="{% url 'backups:run_backup' %}" class="nav-link"><i class="fas fa-database nav-icon {% if request.resolver_match.app_name == 'ejecutar_backup' %}active{% endif %}"></i>Ejecutar Backup</a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'backups:backup_status' %}" class="nav-link"><i class="fas fa-history nav-icon {% if request.resolver_match.app_name == 'estado_backups' %}active{% endif %}"></i>Estado Backups</a>
+            </div>
+            <div class="nav-item">
+                <!-- solo superuser-->
                 <a href="{% url 'admin:index' %}" class="nav-link"><i class="fas fa-cog nav-icon"></i> Panel Admin</a>
             </div>
             {% if user.is_authenticated %}

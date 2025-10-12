@@ -23,51 +23,66 @@ def lista_ambientes(request):
 
     # Aplica los filtros de búsqueda si el formulario es válido
     if form_busqueda.is_valid():
-        busqueda = form_busqueda.cleaned_data.get('busqueda')
-        tipo = form_busqueda.cleaned_data.get('tipo')
-        capacidad_min = form_busqueda.cleaned_data.get('capacidad_min')
-        solo_activos = form_busqueda.cleaned_data.get('solo_activos')
-        con_computadores = form_busqueda.cleaned_data.get('con_computadores')
-        con_escritorios = form_busqueda.cleaned_data.get('con_escritorios')
-        con_tablero_digital = form_busqueda.cleaned_data.get('con_tablero_digital')
-
+        cleaned_data = form_busqueda.cleaned_data
+        
+        # 1. Filtro de Búsqueda por Texto (código o nombre)
+        busqueda = cleaned_data.get('busqueda')
         if busqueda:
             ambientes = ambientes.filter(
-                Q(codigo__icontains=busqueda) |
-                Q(nombre__icontains=busqueda) |
-                Q(ubicacion__icontains=busqueda)
+                Q(codigo__icontains=busqueda) | Q(nombre__icontains=busqueda)
             )
-
+            
+        # 2. Filtro por Tipo de Ambiente
+        tipo = cleaned_data.get('tipo')
         if tipo:
             ambientes = ambientes.filter(tipo=tipo)
-
+            
+        # 3. Filtro por Capacidad Mínima
+        capacidad_min = cleaned_data.get('capacidad_min')
         if capacidad_min:
             ambientes = ambientes.filter(capacidad__gte=capacidad_min)
 
+        # 4. FILTRO BOOLEANO: Solo Ambientes Activos (activo=True)
+        solo_activos = cleaned_data.get('solo_activos')
         if solo_activos:
+            # Si la casilla está marcada, solo muestra los activos (True)
             ambientes = ambientes.filter(activo=True)
-
+        # Nota: Si no está marcada, no se filtra por activo, mostrando ambos.
+            
+        # 5. FILTRO BOOLEANO: Con Computadores 
+        con_computadores = cleaned_data.get('con_computadores')
         if con_computadores:
-            # Los lookups en JSONField buscan por clave y valor
-            ambientes = ambientes.filter(recursos__computadores=True)
-
+            # Buscamos en la relación 'equipos' (el related_name/default) que su nombre contenga 'Computador'
+            ambientes = ambientes.filter(
+                equipos__nombre__icontains='Computador' 
+            ).distinct() # Usamos distinct para evitar duplicados si un ambiente tiene varios computadores
+            
+        # 6. FILTRO BOOLEANO: Con Escritorios
+        con_escritorios = cleaned_data.get('con_escritorios')
         if con_escritorios:
-            ambientes = ambientes.filter(recursos__escritorios=True)
-
+            # Buscamos en la relación 'equipos' que su nombre contenga 'Escritorio'
+            ambientes = ambientes.filter(
+                equipos__nombre__icontains='Escritorio'
+            ).distinct()
+            
+        # 7. FILTRO BOOLEANO: Con Tablero Digital
+        con_tablero_digital = cleaned_data.get('con_tablero_digital')
         if con_tablero_digital:
-            ambientes = ambientes.filter(recursos__tablero_digital=True)
+            # Buscamos en la relación 'equipos' que su nombre contenga 'Tablero Digital'
+            ambientes = ambientes.filter(
+                equipos__nombre__icontains='Tablero Digital' 
+            ).distinct()
 
-    # Ordena los resultados para consistencia
-    ambientes = ambientes.order_by('codigo')
 
-    # Configura la paginación para 10 ambientes por página
-    paginator = Paginator(ambientes, 10)
+    # ... (Paginación y renderizado)
+    paginator = Paginator(ambientes, 10)  # Muestra 10 ambientes por página
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'ambientes': page_obj,
         'form_busqueda': form_busqueda,
+        'page_obj': page_obj,
+        'ambientes': ambientes, # Se envía el QuerySet filtrado
     }
     return render(request, 'ambientes/lista_ambientes.html', context)
 

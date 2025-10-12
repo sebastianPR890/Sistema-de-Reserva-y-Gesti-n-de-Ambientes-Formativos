@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "reservas",
     "usuarios",
     "login",  # Agregar la app de login
+    "backups",
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
@@ -144,3 +145,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sistemareservassena@gmail.com'
 EMAIL_HOST_PASSWORD = 'etjr tbvd rjzr hgfo'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+MYSQLDUMP_PATH = r'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe'
+MYSQL_PATH = r'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
