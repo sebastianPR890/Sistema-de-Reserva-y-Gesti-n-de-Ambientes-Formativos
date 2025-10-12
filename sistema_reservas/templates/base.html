@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SENA APP{% endblock %}</title>
+    <title>{% block title %}Sistema de Reservas SENA{% endblock %}</title>
     {% load static %}
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -47,7 +46,7 @@
                 <a href="{% url 'notificaciones:listar_notificaciones' %}" class="nav-link {% if request.resolver_match.app_name == 'notificaciones' %}active{% endif %}"><i class="fas fa-bell nav-icon"></i>Notificaciones</a>
             </div>
             <div class="nav-item">
-                <a href="/admin/" class="nav-link"><i class="fas fa-cog nav-icon"></i> Panel Admin</a>
+                <a href="{% url 'admin:index' %}" class="nav-link"><i class="fas fa-cog nav-icon"></i> Panel Admin</a>
             </div>
             {% if user.is_authenticated %}
                 <div class="nav-item mt-4">
@@ -58,18 +57,14 @@
                     <div class="nav-user-info text-center mt-2">
                         <small>Conectado como:</small>
                         <a href="{% url 'usuarios:perfil' %}" style="text-decoration: none; font-weight: bold;">
-                            {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% if user.first_name or user.last_name %}
+                                {{ user.first_name }} {{ user.last_name }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
                         </a>
                     </div>
                 </div>
-
-                <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer>
-                    <script>
-                        document.addEventListener("DOMContentLoaded", () => {
-                            // Call your exported functions here to test
-                            SiennaAccessibility.load();
-                        });
-                </script>
             {% endif %}
         </nav>
     </div>
@@ -90,6 +85,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     
     <script src="{% static 'js/app.js' %}"></script>
+
+    <script src="https://website-widgets.pages.dev/dist/sienna.min.js" defer></script>
+    <script>
+        window.siennaOptions = {
+            button: {
+                position: 'bottom-right'
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            // Call your exported functions here to test
+            SiennaAccessibility.load();
+        });
+    </script>
 
     
     {% block extra_js %} 

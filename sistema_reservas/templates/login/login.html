@@ -7,17 +7,17 @@
 <style>
     body {
         background: 
-        radial-gradient(ellipse at top, rgba(255,255,255,0.1) 0%, transparent 50%),
-        radial-gradient(ellipse at bottom, rgba(0,0,0,0.1) 0%, transparent 50%),
-        linear-gradient(180deg, 
-            #0d4f1c 0%,      /* Verde muy oscuro arriba */
-            #1e7e34 20%,     /* Verde oscuro */
-            #28a745 50%,     /* Verde medio */
-            #20c997 80%,     /* Verde agua */
-            #a8e6cf 100%     /* Verde muy claro abajo */
-        );
-        min-height: 100vh;
+            radial-gradient(ellipse at top, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(ellipse at bottom, rgba(0,0,0,0.1) 0%, transparent 50%),
+            linear-gradient(180deg, 
+                #0d4f1c 0%,
+                #1e7e34 20%,
+                #28a745 50%,
+                #20c997 80%,
+                #a8e6cf 100%
+            );
         font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
     }
 
     .content-wrapper {
@@ -55,7 +55,7 @@
     }
 
     .login-header {
-        background: linear-gradient(135deg, #39a900 0%, #2d8700 100%);
+        background: linear-gradient(135deg, #006837 0%, #00a651 100%);
         padding: 2.5rem 2rem;
         text-align: center;
         position: relative;
@@ -135,7 +135,7 @@
     }
 
     .form-label i {
-        color: #39a900;
+        color: #00a651;
         font-size: 1rem;
     }
 
@@ -149,8 +149,8 @@
     }
 
     .form-control:focus {
-        border-color: #39a900;
-        box-shadow: 0 0 0 3px rgba(57, 169, 0, 0.1);
+        border-color: #00a651;
+        box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
         background: white;
     }
 
@@ -173,7 +173,7 @@
     }
 
     .btn-login {
-        background: linear-gradient(135deg, #39a900 0%, #2d8700 100%);
+        background: linear-gradient(135deg, #006837 0%, #00a651 100%);
         border: none;
         border-radius: 10px;
         padding: 0.9rem;
@@ -203,7 +203,7 @@
 
     .btn-login:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(57, 169, 0, 0.4);
+        box-shadow: 0 10px 25px rgba(0, 166, 81, 0.4);
     }
 
     .btn-login:active {
@@ -244,14 +244,14 @@
     }
 
     .register-link a {
-        color: #667eea;
+        color: #00a651;
         font-weight: 600;
         text-decoration: none;
         transition: color 0.3s ease;
     }
 
     .register-link a:hover {
-        color: #764ba2;
+        color: #006837;
         text-decoration: underline;
     }
 
@@ -302,7 +302,7 @@
     }
 
     .password-toggle:hover {
-        color: #667eea;
+        color: #00a651;
     }
 
     @media (max-width: 576px) {

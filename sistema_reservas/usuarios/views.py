@@ -32,4 +32,8 @@ def perfil_usuario(request):
         'user': request.user,
     }
     # Renderiza la nueva plantilla perfil_usuario.html
-    return render(request, 'perfil_usuario.html', context)
+    return render(request, 'usuarios/perfil_usuario.html', context)
+
+@login_required
+def editar_perfil(request):
+    return render(request, 'usuarios/editar_perfil.html', {})
