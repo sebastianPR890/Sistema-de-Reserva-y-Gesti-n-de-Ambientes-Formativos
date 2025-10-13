@@ -9,8 +9,6 @@ from django.http import FileResponse, HttpResponseForbidden
 from .models import Reserva
 from notificaciones.models import Notificacion
 from .forms import ReservaForm
-import pytz 
-from xhtml2pdf import pisa
 from django.template.loader import get_template
 
 def index(request):
