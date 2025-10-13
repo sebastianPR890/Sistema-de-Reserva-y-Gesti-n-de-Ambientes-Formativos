@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 
-from .forms import BusquedaUsuarioForm
+from .forms import BusquedaUsuarioForm, UsuarioEditForm 
 from .models import Usuario
 from django.db.models import Q 
 
@@ -55,6 +55,39 @@ def detalle_usuario(request, pk):
     """Vista para ver detalles de usuario - solo accesible por administradores"""
     usuario = get_object_or_404(Usuario, pk=pk)
     return render(request, 'usuarios/detalle_usuario.html', {'usuario': usuario})
+
+@login_required
+@user_passes_test(es_admin)
+def editar_usuario(request, pk):
+    """
+    Vista para editar un usuario existente. Solo accesible por administradores (is_staff).
+    """
+    # 1. Obtener el objeto Usuario o devolver 404
+    usuario = get_object_or_404(Usuario, pk=pk)
+    
+    if request.method == 'POST':
+        # 2. Rellenar el formulario con los datos de la petición y la instancia
+        form = UsuarioEditForm(request.POST, instance=usuario)
+        
+        if form.is_valid():
+            # 3. Guardar los cambios
+            form.save()
+            messages.success(request, f'✅ Usuario **{usuario.nombre_completo}** actualizado exitosamente.')
+            # Redirigir a la lista
+            return redirect('usuarios:lista_usuarios') 
+        else:
+            messages.error(request, '❌ Error al guardar los cambios. Revisa los campos.')
+            
+    else:
+        # 4. Mostrar el formulario con los datos actuales
+        form = UsuarioEditForm(instance=usuario)
+        
+    context = {
+        'form': form,
+        'usuario': usuario,
+    }
+    
+    return render(request, 'usuarios/editar_usuario.html', context)
 
 @login_required 
 def perfil_usuario(request):

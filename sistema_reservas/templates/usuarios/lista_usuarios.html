@@ -452,6 +452,10 @@
                             <a href="{% url 'usuarios:detalle_usuario' usuario.pk %}" class="action-btn">
                                 <i class="fas fa-eye"></i> Ver
                             </a>
+
+                            <a href="{% url 'usuarios:editar_usuario' usuario.pk %}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit me-1"></i> Editar
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
