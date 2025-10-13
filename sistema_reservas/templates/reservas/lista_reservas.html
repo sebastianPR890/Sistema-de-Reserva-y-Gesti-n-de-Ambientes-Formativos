@@ -115,9 +115,9 @@
                         <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#filterModal">
                             <i class="fas fa-filter me-2"></i>Filtros
                         </button>
-                        <button class="btn btn-outline-secondary" onclick="window.print()">
-                            <i class="fas fa-print me-2"></i>Imprimir
-                        </button>
+                        <a href="{% url 'reservas:descargar_reporte_pdf' %}" class="btn btn-danger">
+                            <i class="fa fa-download"></i> DESCARGAR REPORTE PDF
+                        </a>
                     </div>
                 </div>
             </div>
