@@ -4,73 +4,276 @@
 {% block title %}Detalle de Equipo: {{ equipo.nombre }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    {% include 'messages.html' %} {# Para mostrar mensajes de éxito/error #}
+<div class="container-fluid px-4 py-4" style="background-color: #f8f9fa;">
+    {% include 'messages.html' %}
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">{{ equipo.nombre }} <small class="text-white-50">({{ equipo.codigo }})</small></h2>
-            <div>
-                {% if user.is_staff %}
-                    <a href="{% url 'equipos:equipo_editar' equipo.pk %}" class="btn btn-warning btn-sm me-2">
-                        <i class="fas fa-edit"></i> Editar
-                    </a>
-                    <a href="{% url 'equipos:equipo_eliminar' equipo.pk %}" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Eliminar
-                    </a>
-                {% endif %}
-            </div>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'ambientes:lista' %}"><i class="fas fa-home"></i> Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'ambientes:lista' %}">Ambientes</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}">{{ equipo.ambiente.codigo }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ equipo.codigo }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header con botones de acción -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1 fw-bold text-dark">
+                <i class="fas fa-desktop text-primary me-2"></i>{{ equipo.nombre }}
+            </h1>
+            <p class="text-muted mb-0">Código: {{ equipo.codigo }}</p>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h4 class="mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Información General</h4>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Código:</strong> {{ equipo.codigo }}</li>
-                        <li class="list-group-item"><strong>Nombre:</strong> {{ equipo.nombre }}</li>
-                        <li class="list-group-item"><strong>Estado:</strong> <span class="badge 
-                            {% if equipo.estado == 'DISPONIBLE' %}bg-success
-                            {% elif equipo.estado == 'PRESTADO' %}bg-warning text-dark
-                            {% elif equipo.estado == 'DANADO' %}bg-danger
-                            {% else %}bg-secondary{% endif %}">
-                            {{ equipo.get_estado_display }}
-                        </span></li>
-                        <li class="list-group-item"><strong>Marca:</strong> {{ equipo.marca }}</li>
-                        <li class="list-group-item"><strong>Modelo:</strong> {{ equipo.modelo }}</li>
-                        <li class="list-group-item"><strong>Serie:</strong> {{ equipo.serie }}</li>
-                        <li class="list-group-item"><strong>Ambiente:</strong> <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}">{{ equipo.ambiente.nombre }} ({{ equipo.ambiente.codigo }})</a></li>
-                        {% if equipo.responsable %}
-                        <li class="list-group-item"><strong>Responsable:</strong> {{ equipo.responsable.nombre_completo }}</li>
-                        {% endif %}
-                        <li class="list-group-item"><strong>Fecha de Adquisición:</strong> {{ equipo.fecha_adquisicion|date:"d M Y" }}</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h4 class="mb-3 text-primary mt-md-0 mt-4"><i class="fas fa-file-alt me-2"></i> Descripción</h4>
-                    {% if equipo.descripcion %}
-                        <p>{{ equipo.descripcion|linebreaksbr }}</p>
-                    {% else %}
-                        <p class="text-muted">No hay descripción disponible para este equipo.</p>
-                    {% endif %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> VOLVER
+            </a>
+            {% if user.is_staff %}
+                <a href="{% url 'equipos:equipo_editar' equipo.pk %}" class="btn btn-warning text-dark fw-bold">
+                    <i class="fas fa-edit me-1"></i> EDITAR
+                </a>
+                <a href="{% url 'equipos:equipo_eliminar' equipo.pk %}" class="btn btn-danger fw-bold">
+                    <i class="fas fa-trash me-1"></i> ELIMINAR
+                </a>
+            {% endif %}
+        </div>
+    </div>
 
-                    {% if equipo.observaciones %}
-                        <h4 class="mb-3 text-primary mt-4"><i class="fas fa-comment-alt me-2"></i> Observaciones</h4>
-                        <p>{{ equipo.observaciones|linebreaksbr }}</p>
-                    {% endif %}
+    <div class="row g-4">
+        <!-- Columna Izquierda: Información General -->
+        <div class="col-lg-8">
+            <!-- Tarjeta: Información General -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4" style="background-color: white;">
+                    <h5 class="card-title mb-4 d-flex align-items-center text-dark fw-bold">
+                        <span class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                            <i class="fas fa-info-circle text-white"></i>
+                        </span>
+                        Información General
+                    </h5>
+
+                    <div class="row g-3">
+                        <!-- Código -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #0d6efd;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-barcode text-white"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Código</small>
+                                        <strong class="text-dark fs-6">{{ equipo.codigo }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #198754;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-circle-check text-white"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Estado</small>
+                                        <span class="badge fs-6 px-3 py-2
+                                            {% if equipo.estado == 'DISPONIBLE' %}bg-success
+                                            {% elif equipo.estado == 'PRESTADO' %}bg-warning text-dark
+                                            {% elif equipo.estado == 'DANADO' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ equipo.get_estado_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marca -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #0dcaf0;">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; background-color: #0dcaf0;">
+                                        <i class="fas fa-trademark text-white"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Marca</small>
+                                        <strong class="text-dark fs-6">{{ equipo.marca }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modelo -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #ffc107;">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; background-color: #ffc107;">
+                                        <i class="fas fa-tag text-dark"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Modelo</small>
+                                        <strong class="text-dark fs-6">{{ equipo.modelo }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Serie -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #6c757d;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-hashtag text-white"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Número de Serie</small>
+                                        <strong class="text-dark fs-6">{{ equipo.serie }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fecha de Adquisición -->
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background-color: #f8f9fa; border-left: 4px solid #dc3545;">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                        <i class="fas fa-calendar text-white"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block fw-semibold">Fecha de Adquisición</small>
+                                        <strong class="text-dark fs-6">{{ equipo.fecha_adquisicion|date:"d M Y" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <hr class="my-4">
 
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Volver al Ambiente
-                </a>
-                <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-outline-primary">
-                    <i class="fas fa-list"></i> Ver todos los Equipos
-                </a>
+            <!-- Tarjeta: Descripción -->
+            {% if equipo.descripcion %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4" style="background-color: white;">
+                    <h5 class="card-title mb-3 d-flex align-items-center text-dark fw-bold">
+                        <span class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                            <i class="fas fa-align-left text-white"></i>
+                        </span>
+                        Descripción
+                    </h5>
+                    <p class="text-dark mb-0 fs-6" style="line-height: 1.6;">{{ equipo.descripcion|linebreaksbr }}</p>
+                </div>
             </div>
+            {% endif %}
+
+            <!-- Tarjeta: Observaciones -->
+            {% if equipo.observaciones %}
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4" style="background-color: white;">
+                    <h5 class="card-title mb-3 d-flex align-items-center text-dark fw-bold">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px; background-color: #ffc107;">
+                            <i class="fas fa-comment-alt text-dark"></i>
+                        </span>
+                        Observaciones
+                    </h5>
+                    <p class="text-dark mb-0 fs-6" style="line-height: 1.6;">{{ equipo.observaciones|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Columna Derecha: Información Complementaria -->
+        <div class="col-lg-4">
+            <!-- Tarjeta: Ubicación -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4" style="background-color: white;">
+                    <h5 class="card-title mb-3 d-flex align-items-center text-dark fw-bold">
+                        <span class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                            <i class="fas fa-map-marker-alt text-white"></i>
+                        </span>
+                        Ubicación
+                    </h5>
+                    <div class="p-3 rounded mb-3" style="background-color: #f8f9fa; border-left: 4px solid #198754;">
+                        <small class="text-muted d-block mb-2 fw-semibold">Ambiente</small>
+                        <strong class="text-dark d-block fs-6 mb-1">{{ equipo.ambiente.nombre }}</strong>
+                        <small class="text-muted fw-semibold">{{ equipo.ambiente.codigo }}</small>
+                    </div>
+                    <a href="{% url 'ambientes:detalle' equipo.ambiente.pk %}" class="btn btn-success w-100 fw-bold">
+                        <i class="fas fa-arrow-right me-2"></i> VER AMBIENTE
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta: Responsable -->
+            {% if equipo.responsable %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4" style="background-color: white;">
+                    <h5 class="card-title mb-3 d-flex align-items-center text-dark fw-bold">
+                        <span class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px; background-color: #0dcaf0;">
+                            <i class="fas fa-user text-white"></i>
+                        </span>
+                        Responsable
+                    </h5>
+                    <div class="p-3 rounded text-center" style="background-color: #f8f9fa;">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background-color: #0dcaf0;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                        <strong class="text-dark d-block fs-6">{{ equipo.responsable.nombre_completo }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #6c757d;
+    }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #198754;
+    }
+
+    .breadcrumb-item.active {
+        color: #198754;
+        font-weight: 600;
+    }
+
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+</style>
 {% endblock content %}

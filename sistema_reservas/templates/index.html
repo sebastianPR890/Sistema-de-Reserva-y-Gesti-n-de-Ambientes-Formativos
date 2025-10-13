@@ -1,33 +1,39 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} {% endblock %}
+{% block title %}Sistema de Reservas SENA{% endblock %}
 
 {% block content %}
+<!-- Botón Manual (esquina superior derecha) - Diseño fiel a la imagen -->
+<a href="{% url 'login:manual_usuario' %}" class="btn-manual-sena">
+    <i class="fas fa-book me-2"></i>
+    <span>Manual</span>
+</a>
+
 <div class="main-content">
-    <section class="hero-section">
+    <section class="hero-section text-center py-5">
         <div class="hero-logo">
             <img src="{% static 'logo_proyecto/logo.png' %}" alt="Logo Proyecto" class="logo-img">
         </div>
-        <h1 class="hero-title">Sistema de reservas SENA</h1>
+        <h1 class="hero-title">Sistema de Reservas y Gestión de Ambientes SENA</h1>
         <h2 class="hero-subtitle">Gestión de Ambientes Formativos</h2>
         <p class="hero-description">
             Bienvenido al sistema de reservas de ambientes del Centro Minero
         </p>
-        <div class="cta-buttons">
+        <div class="cta-buttons mt-4">
             {% if user.is_authenticated %}
-                <a href="{% url 'reservas:lista_reservas' %}" class="btn btn-primary">
-                    <i class="fas fa-calendar-alt"></i> Ver Reservas
+                <a href="{% url 'reservas:lista_reservas' %}" class="btn btn-outline-light btn-lg me-2 mb-2">
+                    <i class="fas fa-calendar-alt me-2"></i>Ver Reservas
                 </a>
-                <a href="{% url 'reservas:crear_reserva' %}" class="btn btn-secondary">
-                    <i class="fas fa-plus"></i> Crear Reserva
+                <a href="{% url 'reservas:crear_reserva' %}" class="btn btn-success btn-lg me-2 mb-2">
+                    <i class="fas fa-plus me-2"></i>Crear Reserva
                 </a>
             {% else %}
-                <a href="{% url 'login:login' %}" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                <a href="{% url 'login:login' %}" class="btn btn-outline-light btn-lg me-2 mb-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
                 </a>
-                <a href="{% url 'login:registro' %}" class="btn btn-secondary">
-                    <i class="fas fa-user-plus"></i> Registrarse
+                <a href="{% url 'login:registro' %}" class="btn btn-outline-light btn-lg me-2 mb-2">
+                    <i class="fas fa-user-plus me-2"></i>Registrarse
                 </a>
             {% endif %}
         </div>
@@ -35,23 +41,133 @@
 </div>
 
 <style>
+/* Estilo del botón Manual - Verde claro como en la imagen */
+.btn-manual-sena {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 0 16px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #28a745; /* Verde SENA */
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-manual-sena i {
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+.btn-manual-sena:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 1);
+    color: #218838;
+    border-color: rgba(33, 136, 56, 0.5);
+}
+
+/* Estilo del logo central */
 .hero-logo {
-    width: 230px;        
-    height: 230px;       
-    margin: 0 auto 20px auto;
+    width: 230px;
+    height: 230px;
+    margin: 0 auto 25px;
     border-radius: 50%;
     background: white;
-    padding: 6px;        
-    overflow: hidden;    
+    padding: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .hero-logo .logo-img {
-    width: 150%;          
+    width: 140%;
     height: auto;
     object-fit: contain;
+}
+
+/* Títulos y texto */
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 1rem;
+}
+
+.hero-description {
+    color: rgba(255,255,255,0.85);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Botones principales */
+.btn-outline-light {
+    border: 2px solid rgba(255,255,255,0.8);
+    color: white;
+    background: transparent;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1fa589 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    .btn-manual-sena {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 0.85rem;
+    }
+    .btn-manual-sena i {
+        font-size: 1rem;
+    }
 }
 </style>
 {% endblock %}

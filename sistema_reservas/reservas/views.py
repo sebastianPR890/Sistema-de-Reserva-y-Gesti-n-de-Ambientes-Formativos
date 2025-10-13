@@ -51,10 +51,7 @@ def editar_reserva(request, pk):
     if reserva.usuario != request.user and not request.user.is_superuser:
         return HttpResponseForbidden("No tienes permiso para editar esta reserva.")
 
-    # Lógica del modelo para verificar si la reserva es editable
-    if not reserva.puede_ser_editada():
-        messages.error(request, 'Esta reserva ya no puede ser editada.')
-        return redirect('reservas:lista_reservas')
+
 
     if request.method == 'POST':
         form = ReservaForm(request.POST, instance=reserva)

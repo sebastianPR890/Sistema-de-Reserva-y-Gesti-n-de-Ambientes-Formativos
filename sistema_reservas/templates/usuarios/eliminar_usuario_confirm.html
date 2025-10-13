@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-5 text-center">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <div class="icon-warning mx-auto mb-3">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h2 class="fw-bold text-danger mb-3">Eliminar Usuario</h2>
+                        <p class="text-muted">
+                            ¿Estás seguro de que deseas eliminar al usuario
+                            <strong class="text-dark d-block mt-1">{{ usuario.nombre_completo }}</strong>
+                            de forma permanente?
+                        </p>
+                        <p class="text-secondary small mt-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+
+                    <!-- Formulario de confirmación -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-center">
+                            <button type="submit" class="btn btn-danger btn-lg px-4 shadow-sm">
+                                <i class="fas fa-trash-alt me-2"></i>Confirmar Eliminación
+                            </button>
+                            <a href="{% url 'usuarios:lista_usuarios' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.icon-warning {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff416c 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.2rem;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.card {
+    border: 1px solid rgba(0,0,0,0.05);
+    background: #fff;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(220, 53, 69, 0.4);
+}
+
+.btn-outline-secondary {
+    border-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .d-md-flex {
+        flex-direction: column !important;
+    }
+}
+</style>
+{% endblock %}

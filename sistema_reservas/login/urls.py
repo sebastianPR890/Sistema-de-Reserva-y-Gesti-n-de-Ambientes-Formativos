@@ -8,6 +8,9 @@ urlpatterns = [
     path('registro/', views.registro_view, name='registro'),
     path('logout/', views.logout_view, name='logout'),
 
+    # URLs para el Manual de Usuario
+    path('manual/', views.manual_usuario_view, name='manual_usuario'),
+
     path('cambia_contraseña/<str:token>/', views.cambia_con, name='cambia_con'), 
     path('recuperar_contraseña/', views.recu_contra, name="recu_contra"), 
 ]

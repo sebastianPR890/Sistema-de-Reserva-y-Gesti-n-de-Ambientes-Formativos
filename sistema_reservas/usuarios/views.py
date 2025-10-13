@@ -71,3 +71,14 @@ def perfil_usuario(request):
 @login_required
 def editar_perfil(request):
     return render(request, 'usuarios/editar_perfil.html', {})
+
+@login_required
+@user_passes_test(es_admin)
+def eliminar_usuario(request, pk):
+    usuario = get_object_or_404(Usuario, pk=pk)
+    if request.method == 'POST':
+        usuario.activo = False
+        usuario.save()
+        messages.success(request, f'Usuario {usuario.nombre_completo} ha sido desactivado.')
+        return redirect('usuarios:lista_usuarios')
+    return render(request, 'usuarios/eliminar_usuario_confirm.html', {'usuario': usuario})

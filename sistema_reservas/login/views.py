@@ -13,6 +13,13 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.urls import reverse
 
+
+# --- Vistas de Manual de Usuario ---
+
+def manual_usuario_view(request):
+    return render(request, 'manual/manual_usuario.html')
+
+
 # --- Vistas de Autenticación ---
 
 def login_view(request):

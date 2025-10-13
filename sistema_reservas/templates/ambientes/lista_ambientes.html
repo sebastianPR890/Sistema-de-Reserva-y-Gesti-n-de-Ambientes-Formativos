@@ -24,56 +24,65 @@
             </div>
         </div>
 
-        <!-- Search Card -->
+        <!-- Search & Filter Card -->
         <div class="card border-0 shadow-lg rounded-4 mb-4 animate__animated animate__fadeInUp">
             <div class="card-body p-4">
                 <form method="get" id="searchForm">
-                    {% csrf_token %}
-                    
+                    <!-- Búsqueda y filtros principales -->
                     <div class="row g-3 mb-4">
                         <div class="col-md-5">
-                            <label class="form-label text-muted fw-bold">Buscar por Nombre/Código</label>
+                            <label for="{{ form_busqueda.busqueda.id_for_label }}" class="form-label text-muted fw-bold">
+                                Buscar por Nombre o Código
+                            </label>
                             {{ form_busqueda.busqueda }}
                         </div>
-                        
                         <div class="col-md-4">
-                            <label class="form-label text-muted fw-bold">Filtrar por Tipo</label>
+                            <label for="{{ form_busqueda.tipo.id_for_label }}" class="form-label text-muted fw-bold">
+                                Tipo de Ambiente
+                            </label>
                             {{ form_busqueda.tipo }}
                         </div>
-                        
                         <div class="col-md-3">
-                            <label class="form-label text-muted fw-bold">Capacidad Mínima</label>
+                            <label for="{{ form_busqueda.capacidad_min.id_for_label }}" class="form-label text-muted fw-bold">
+                                Capacidad Mínima
+                            </label>
                             {{ form_busqueda.capacidad_min }}
                         </div>
                     </div>
-                    
-                    <h6 class="text-secondary mb-3"><i class="fas fa-filter me-1"></i> Filtros de Equipamiento y Estado</h6>
+
+                    <!-- Filtros avanzados (equipamiento y estado) -->
+                    <h6 class="text-secondary mb-3"><i class="fas fa-filter me-1"></i> Filtros Adicionales</h6>
                     <hr class="mt-0 mb-3">
                     <div class="row g-3 mb-4">
-                        
-                        
                         <div class="col-md-6">
                             <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ form_busqueda.solo_activos.id_for_label }}" name="{{ form_busqueda.solo_activos.name }}" {% if form_busqueda.solo_activos.value %}checked{% endif %} value="on">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    id="{{ form_busqueda.solo_activos.id_for_label }}"
+                                    name="{{ form_busqueda.solo_activos.name }}"
+                                    {% if form_busqueda.solo_activos.value %}checked{% endif %}>
                                 <label class="form-check-label" for="{{ form_busqueda.solo_activos.id_for_label }}">
-                                    <i class="fas fa-check-circle me-1 text-success"></i> {{ form_busqueda.solo_activos.label }}
+                                    <i class="fas fa-check-circle me-1 text-success"></i> Solo activos
                                 </label>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ form_busqueda.con_computadores.id_for_label }}" name="{{ form_busqueda.con_computadores.name }}" {% if form_busqueda.con_computadores.value %}checked{% endif %} value="on">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    id="{{ form_busqueda.con_computadores.id_for_label }}"
+                                    name="{{ form_busqueda.con_computadores.name }}"
+                                    {% if form_busqueda.con_computadores.value %}checked{% endif %}>
                                 <label class="form-check-label" for="{{ form_busqueda.con_computadores.id_for_label }}">
-                                    <i class="fas fa-desktop me-1 text-info"></i> {{ form_busqueda.con_computadores.label }}
+                                    <i class="fas fa-desktop me-1 text-info"></i> Con computadores
                                 </label>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-end gap-2">
+
+                    <!-- Botones de acción -->
+                    <div class="d-flex justify-content-end gap-2 flex-wrap">
                         <a href="{% url 'ambientes:lista' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-eraser me-1"></i> Limpiar Filtros
+                            <i class="fas fa-eraser me-1"></i> Limpiar
                         </a>
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-filter me-1"></i> Aplicar Filtros
+                            <i class="fas fa-search me-1"></i> Aplicar Filtros
                         </button>
                     </div>
                 </form>
@@ -107,7 +116,7 @@
                             </div>
                             <div>
                                 <p class="mb-0 small text-muted fw-semibold">Disponibles</p>
-                                <h4 class="mb-0 fw-bold text-success">{{ ambientes|length }}</h4>
+                                <h4 class="mb-0 fw-bold text-success">{{ ambientes_disponibles }}</h4>
                             </div>
                         </div>
                     </div>
@@ -122,9 +131,7 @@
                             </div>
                             <div>
                                 <p class="mb-0 small text-muted fw-semibold">Capacidad Total</p>
-                                <h4 class="mb-0 fw-bold text-dark">
-                                    {% widthratio ambientes|length 1 50 %}
-                                </h4>
+                                <h4 class="mb-0 fw-bold text-dark">{{ capacidad_total }}</h4>
                             </div>
                         </div>
                     </div>
@@ -176,7 +183,7 @@
                     </div>
                     <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0">
                         <div class="d-flex align-items-center text-muted small">
-                            <i class="fas fa-circle text-success me-2" style="font-size: 0.5rem;"></i>
+                            <i class="fas fa-circle text-{{ ambiente.activo|yesno:'success,secondary' }} me-2" style="font-size: 0.5rem;"></i>
                             <span>{% if ambiente.activo %}Activo{% else %}Inactivo{% endif %}</span>
                         </div>
                     </div>
@@ -210,12 +217,12 @@
                     <ul class="pagination justify-content-center mb-0">
                         {% if page_obj.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page=1">
+                            <a class="page-link" href="?page=1{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">
                                 <i class="fas fa-angle-double-left"></i>
                             </a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">
                                 <i class="fas fa-angle-left"></i>
                             </a>
                         </li>
@@ -236,12 +243,12 @@
 
                         {% if page_obj.has_next %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">
                                 <i class="fas fa-angle-right"></i>
                             </a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{ k }}={{ v }}{% endif %}{% endfor %}">
                                 <i class="fas fa-angle-double-right"></i>
                             </a>
                         </li>
@@ -472,48 +479,11 @@
     border-color: #28a745;
     box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-    .page-header h1 {
-        font-size: 1.5rem;
-    }
-    
-    .ambiente-card {
-        margin-bottom: 1rem;
-    }
-    
-    .stat-icon-small {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-    }
-}
-
-#searchForm .form-label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-#searchForm .form-control,
-#searchForm .form-select {
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 0.625rem 1rem;
-    transition: all 0.3s ease;
-}
-
-#searchForm .form-control:focus,
-#searchForm .form-select:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
-}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Add Bootstrap classes to form fields
+    // Asegurar clases Bootstrap en campos del formulario
     const form = document.getElementById('searchForm');
     if (form) {
         const inputs = form.querySelectorAll('input, select, textarea');
@@ -528,20 +498,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animate cards on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
+    // Animación suave al cargar tarjetas
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
                 entry.target.style.transform = 'translateY(0)';
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
     document.querySelectorAll('.ambiente-card').forEach(card => {
         card.style.opacity = '0';

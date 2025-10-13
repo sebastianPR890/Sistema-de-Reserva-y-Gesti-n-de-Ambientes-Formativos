@@ -13,6 +13,7 @@ urlpatterns = [
     path('accounts/', include('login.urls')),  # Agregamos las URLs de login
 
     path('backups/', include('backups.urls')),
+
 ]
 
 if settings.DEBUG:

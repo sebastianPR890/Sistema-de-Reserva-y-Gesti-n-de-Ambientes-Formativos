@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid" style="background: linear-gradient(135deg, #1e7e34 0%, #155724 100%); min-height: 100vh;">
+<div class="container-fluid ambiente-detalle-container">
     <div class="px-4 py-4">
         {% include 'messages.html' %}
 
@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <small class="text-muted d-block">Tipo de Ambiente</small>
-                                    <strong class="text-dark">{{ ambiente.get_tipo_display }}</strong>
+                                    <strong class="text-dark">{{ ambiente.get_tipo_display|default:"No especificado" }}</strong>
                                 </div>
                             </div>
 
@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <small class="text-muted d-block">Capacidad</small>
-                                    <strong class="text-dark">{{ ambiente.capacidad }} personas</strong>
+                                    <strong class="text-dark">{{ ambiente.capacidad|default:"0" }} personas</strong>
                                 </div>
                             </div>
 
@@ -77,7 +77,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <small class="text-muted d-block">Ubicación</small>
-                                    <strong class="text-dark">{{ ambiente.ubicacion }}</strong>
+                                    <strong class="text-dark">{{ ambiente.ubicacion|default:"No especificada" }}</strong>
                                 </div>
                             </div>
 
@@ -106,7 +106,7 @@
                 </div>
             </div>
 
-            <!-- Resources Card -->
+            <!-- Resources Card - VERSIÓN CORREGIDA -->
             <div class="col-lg-6">
                 <div class="card border-0 shadow-lg rounded-4 h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.1s">
                     <div class="card-header bg-gradient-success text-white py-3 rounded-top-4">
@@ -117,7 +117,8 @@
                     </div>
                     <div class="card-body p-4">
                         <div class="resources-grid">
-                            {% if ambiente.recursos.computadores %}
+                            <!-- Computadores -->
+                            {% if ambiente.tiene_computadores or ambiente.numero_computadores %}
                             <div class="resource-card">
                                 <div class="resource-icon">
                                     <i class="fas fa-desktop"></i>
@@ -126,17 +127,20 @@
                                     <h6 class="fw-bold mb-1">Computadores</h6>
                                     <div class="d-flex justify-content-between small">
                                         <span class="text-muted">Total:</span>
-                                        <strong class="text-success">{{ ambiente.recursos.numero_computadores }}</strong>
+                                        <strong class="text-success">{{ ambiente.numero_computadores|default:"0" }}</strong>
                                     </div>
+                                    {% if ambiente.computadores_danados %}
                                     <div class="d-flex justify-content-between small">
                                         <span class="text-muted">Dañados:</span>
-                                        <strong class="text-danger">{{ ambiente.recursos.computadores_danados }}</strong>
+                                        <strong class="text-danger">{{ ambiente.computadores_danados }}</strong>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% endif %}
 
-                            {% if ambiente.recursos.escritorios %}
+                            <!-- Escritorios -->
+                            {% if ambiente.tiene_escritorios or ambiente.cantidad_escritorios %}
                             <div class="resource-card">
                                 <div class="resource-icon">
                                     <i class="fas fa-chair"></i>
@@ -145,17 +149,20 @@
                                     <h6 class="fw-bold mb-1">Escritorios</h6>
                                     <div class="d-flex justify-content-between small">
                                         <span class="text-muted">Total:</span>
-                                        <strong class="text-success">{{ ambiente.recursos.cantidad_escritorios }}</strong>
+                                        <strong class="text-success">{{ ambiente.cantidad_escritorios|default:"0" }}</strong>
                                     </div>
+                                    {% if ambiente.escritorios_danados %}
                                     <div class="d-flex justify-content-between small">
                                         <span class="text-muted">Dañados:</span>
-                                        <strong class="text-danger">{{ ambiente.recursos.escritorios_danados }}</strong>
+                                        <strong class="text-danger">{{ ambiente.escritorios_danados }}</strong>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% endif %}
 
-                            {% if ambiente.recursos.tablero_digital %}
+                            <!-- Tablero Digital -->
+                            {% if ambiente.tablero_digital or ambiente.tiene_tablero_digital %}
                             <div class="resource-card">
                                 <div class="resource-icon">
                                     <i class="fas fa-chalkboard"></i>
@@ -166,14 +173,53 @@
                                 </div>
                             </div>
                             {% endif %}
+
+                            <!-- Proyector -->
+                            {% if ambiente.proyector or ambiente.tiene_proyector %}
+                            <div class="resource-card">
+                                <div class="resource-icon">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <div class="resource-info">
+                                    <h6 class="fw-bold mb-1">Proyector</h6>
+                                    <span class="badge bg-success">Disponible</span>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Aires Acondicionados -->
+                            {% if ambiente.aires_acondicionados %}
+                            <div class="resource-card">
+                                <div class="resource-icon">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="resource-info">
+                                    <h6 class="fw-bold mb-1">Aire Acondicionado</h6>
+                                    <div class="d-flex justify-content-between small">
+                                        <span class="text-muted">Cantidad:</span>
+                                        <strong class="text-success">{{ ambiente.aires_acondicionados }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Si no hay recursos -->
+                            {% if not ambiente.tiene_computadores and not ambiente.numero_computadores and not ambiente.tiene_escritorios and not ambiente.cantidad_escritorios and not ambiente.tablero_digital and not ambiente.tiene_tablero_digital and not ambiente.proyector and not ambiente.tiene_proyector and not ambiente.aires_acondicionados %}
+                            <div class="col-12">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-inbox text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                                    <p class="text-muted mb-0">No hay recursos registrados para este ambiente</p>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
 
-                        {% if ambiente.recursos.observaciones %}
+                        {% if ambiente.observaciones_recursos or ambiente.observaciones %}
                         <div class="mt-4 pt-3 border-top">
                             <h6 class="fw-bold text-success mb-3">
                                 <i class="fas fa-comment-alt me-2"></i>Observaciones
                             </h6>
-                            <p class="text-muted mb-0">{{ ambiente.recursos.observaciones }}</p>
+                            <p class="text-muted mb-0">{{ ambiente.observaciones_recursos|default:ambiente.observaciones }}</p>
                         </div>
                         {% endif %}
                     </div>
@@ -188,6 +234,9 @@
                     <h5 class="mb-0 fw-bold text-dark">
                         <i class="fas fa-laptop text-success me-2"></i>
                         Equipos del Ambiente
+                        <span class="badge bg-success bg-opacity-10 text-success ms-2">
+                            {{ ambiente.equipos.all.count }}
+                        </span>
                     </h5>
                     {% if user.is_staff %}
                     <a href="{% url 'ambientes:agregar_equipo' ambiente.pk %}" class="btn btn-success">
@@ -244,6 +293,9 @@
                                 </td>
                                 <td class="py-3">
                                     <div class="fw-semibold text-dark">{{ equipo.nombre }}</div>
+                                    {% if equipo.tipo %}
+                                    <small class="text-muted">{{ equipo.get_tipo_display }}</small>
+                                    {% endif %}
                                 </td>
                                 <td class="py-3">
                                     <span class="badge-modern badge-estado-{{ equipo.estado }}">
@@ -252,7 +304,10 @@
                                     </span>
                                 </td>
                                 <td class="py-3">
-                                    <span class="text-muted">{{ equipo.marca }} {{ equipo.modelo }}</span>
+                                    <span class="text-muted">
+                                        {{ equipo.marca|default:"N/A" }} 
+                                        {% if equipo.modelo %}{{ equipo.modelo }}{% endif %}
+                                    </span>
                                 </td>
                                 <td class="text-center py-3">
                                     <div class="btn-group-modern" role="group">
@@ -305,7 +360,12 @@
 </div>
 
 <style>
-/* Global */
+/* Global Styles */
+.ambiente-detalle-container {
+    background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+    min-height: 100vh;
+}
+
 .rounded-4 {
     border-radius: 1rem !important;
 }
@@ -419,7 +479,7 @@
     margin-bottom: 0.75rem;
 }
 
-/* Table */
+/* Table Styles */
 .table {
     font-size: 0.95rem;
 }
@@ -458,29 +518,32 @@
     font-size: 0.5rem;
 }
 
-/* Different badge colors based on equipment state */
-.badge-estado-disponible {
+.badge-estado-disponible,
+.badge-estado-operativo {
     background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(32, 201, 151, 0.15) 100%);
     color: #28a745;
     border: 2px solid rgba(40, 167, 69, 0.3);
 }
 
-.badge-estado-mantenimiento {
+.badge-estado-mantenimiento,
+.badge-estado-en_mantenimiento {
     background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.15) 100%);
     color: #ff9800;
     border: 2px solid rgba(255, 193, 7, 0.3);
 }
 
-.badge-estado-danado {
+.badge-estado-danado,
+.badge-estado-fuera_de_servicio {
     background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(200, 35, 51, 0.15) 100%);
     color: #dc3545;
     border: 2px solid rgba(220, 53, 69, 0.3);
 }
 
-/* Button Actions Modern */
+/* Button Actions */
 .btn-group-modern {
     display: flex;
     gap: 0.5rem;
+    justify-content: center;
 }
 
 .btn-action {
@@ -541,6 +604,7 @@
     text-transform: uppercase;
     font-size: 0.875rem;
     letter-spacing: 0.5px;
+    padding: 0.625rem 1.25rem;
 }
 
 .btn-success {
@@ -566,7 +630,7 @@
     transform: translateY(-2px);
 }
 
-/* Empty State Small */
+/* Empty State */
 .empty-icon-small {
     width: 80px;
     height: 80px;
@@ -584,29 +648,135 @@
     opacity: 0.5;
 }
 
-/* Responsive */
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .resources-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
+    .ambiente-detalle-container {
+        padding: 0 !important;
+    }
+    
+    .px-4 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
     .resources-grid {
         grid-template-columns: 1fr;
     }
     
     .info-list-item {
-        flex-direction: column;
-        text-align: center;
+        padding: 0.75rem;
     }
     
     .btn-group-modern {
-        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    .badge-modern {
+        font-size: 0.65rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+    
+    .resource-card {
+        padding: 1rem;
+    }
+    
+    .resource-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
     }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
+    // Initialize Bootstrap tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Confirm delete with better UX
+    document.querySelectorAll('.btn-action-delete').forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!confirm('¿Está seguro de que desea eliminar este equipo?\n\nEsta acción no se puede deshacer.')) {
+                e.preventDefault();
+            }
+        });
+    });
+    
+    // Add loading state to buttons
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function() {
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+            }
+        });
     });
 });
 </script>
