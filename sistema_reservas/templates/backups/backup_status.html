@@ -546,9 +546,19 @@
                                     Descargar
                                 </a>
                                 
+                                <form method="post" action="{% url 'backups:restore_backup_file' file.name %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning" 
+                                            onclick="return confirm('¿Está seguro de restaurar este backup? Esta acción reemplazará todos los datos actuales.')">
+                                        <i class="fas fa-sync-alt"></i>
+                                        Restaurar
+                                    </button>
+                                </form>
+                                
                                 <form method="post" action="{% url 'backups:delete_backup' file.name %}" style="display:inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de enviar este backup a la papelera?')">
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('¿Estás seguro de enviar este backup a la papelera?')">
                                         <i class="fas fa-trash"></i>
                                         Eliminar
                                     </button>

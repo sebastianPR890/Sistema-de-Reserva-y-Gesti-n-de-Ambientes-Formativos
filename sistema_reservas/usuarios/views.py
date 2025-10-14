@@ -14,8 +14,8 @@ def es_admin(user):
 def lista_usuarios(request):
     """Vista para listar, buscar y filtrar usuarios - solo accesible por administradores"""
     
-    # 1. Inicializa el QuerySet de usuarios activos
-    usuarios = Usuario.objects.filter(activo=True).order_by('apellidos', 'nombres') 
+    # 1. Inicializa el QuerySet de todos los usuarios (sin filtro de activo)
+    usuarios = Usuario.objects.all().order_by('apellidos', 'nombres') 
     
     # 2. Inicializa el formulario de búsqueda con los parámetros GET
     form_busqueda = BusquedaUsuarioForm(request.GET)
@@ -71,8 +71,11 @@ def editar_usuario(request, pk):
         
         if form.is_valid():
             # 3. Guardar los cambios
-            form.save()
-            messages.success(request, f'✅ Usuario **{usuario.nombre_completo}** actualizado exitosamente.')
+            usuario = form.save(commit=False)
+            # Asegurarnos que activo e is_active estén sincronizados
+            usuario.is_active = usuario.activo
+            usuario.save()
+            messages.success(request, f'Usuario {usuario.nombre_completo} actualizado exitosamente.')
             # Redirigir a la lista
             return redirect('usuarios:lista_usuarios') 
         else:

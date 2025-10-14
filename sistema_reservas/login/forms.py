@@ -42,6 +42,19 @@ class CustomRegistroForm(UserCreationForm):
         self.fields['password1'].help_text = 'La contraseña debe tener al menos 8 caracteres'
         self.fields['password2'].help_text = 'Repite la contraseña'
         
+        # Agregar validación para el campo documento
+        self.fields['documento'].widget.attrs.update({
+            'maxlength': '10',
+            'pattern': '\d{10}',
+            'title': 'El documento debe tener exactamente 10 dígitos numéricos'
+        })
+    
+    def clean_documento(self):
+        documento = self.cleaned_data.get('documento')
+        if not documento or not documento.isdigit() or len(documento) != 10:
+            raise forms.ValidationError('El documento debe tener exactamente 10 dígitos numéricos.')
+        return documento
+        
     def save(self, commit=True):
         user = super().save(commit=False)
         user.username = user.documento  # Usar el documento como username

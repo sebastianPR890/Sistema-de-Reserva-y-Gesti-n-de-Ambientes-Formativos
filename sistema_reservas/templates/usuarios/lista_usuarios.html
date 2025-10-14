@@ -414,10 +414,6 @@
                 <div class="stat-value">{{ usuarios|length }}</div>
                 <div class="stat-label">Activos</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value">0</div>
-                <div class="stat-label">Nuevos este mes</div>
-            </div>
         </div>
 
         <!-- Tabla -->
@@ -429,6 +425,7 @@
                         <th>Documento</th>
                         <th>Email</th>
                         <th>Rol</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -449,6 +446,13 @@
                             <span class="role-badge {% if usuario.rol == 'admin' %}admin{% elif usuario.rol == 'instructor' %}instructor{% elif usuario.rol == 'aprendiz' %}aprendiz{% else %}default{% endif %}">
                                 {{ usuario.get_rol_display }}
                             </span>
+                        </td>
+                        <td>
+                            {% if usuario.activo %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'usuarios:detalle_usuario' usuario.pk %}" class="action-btn">

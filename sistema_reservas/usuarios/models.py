@@ -48,6 +48,10 @@ class Usuario(AbstractUser):
             self.first_name = self.nombres
         if not self.last_name:
             self.last_name = self.apellidos
+            
+        # Sincronizar is_active con activo
+        self.is_active = self.activo
+        
         super().save(*args, **kwargs)
     
     def nombre_completo(self):

@@ -10,4 +10,5 @@ urlpatterns = [
     path('delete/<str:filename>/', views.delete_backup, name='delete_backup'),
     # Asegúrate de que esta ruta esté correcta
     path('restore/<str:filename>/', views.restore_backup, name='restore_backup'), 
+    path('restore-file/<str:filename>/', views.restore_backup_file, name='restore_backup_file'),
 ]

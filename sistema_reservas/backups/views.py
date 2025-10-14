@@ -1,12 +1,15 @@
 import os
 import datetime
 import shutil
+from zipfile import ZipFile
+import psycopg2
 from django.shortcuts import render, redirect
 from django.core.management import call_command
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
 from django.http import FileResponse, Http404
+import subprocess
 
 # --- Rutas de Carpetas ---
 BACKUP_DIR = settings.BASE_DIR / 'backups_storage'
@@ -170,4 +173,83 @@ def restore_backup(request, filename):
         else:
             messages.error(request, f"El archivo de backup '{filename}' no se encuentra en la papelera.")
     
+    return redirect('backups:backup_status')
+
+
+@user_passes_test(is_superuser_or_staff)
+def restore_backup_file(request, filename):
+    if request.method == 'POST':
+        try:
+            # Rutas de archivos
+            backup_path = os.path.join(BACKUP_DIR, filename)
+            temp_dir = os.path.join(settings.BASE_DIR, 'temp_restore')
+
+            if not os.path.exists(backup_path):
+                messages.error(request, "El archivo de backup no existe.")
+                return redirect('backups:backup_status')
+
+            # Crear directorio temporal
+            os.makedirs(temp_dir, exist_ok=True)
+
+            # Extraer el backup
+            with ZipFile(backup_path, 'r') as zip_ref:
+                zip_ref.extractall(temp_dir)
+
+            # Buscar archivo SQL
+            sql_backup = None
+            for file in os.listdir(temp_dir):
+                if file.endswith('.sql'):
+                    sql_backup = os.path.join(temp_dir, file)
+                    break
+
+            if sql_backup:
+                try:
+                    db_settings = settings.DATABASES['default']
+                    env = os.environ.copy()
+                    env['PGPASSWORD'] = db_settings['PASSWORD']
+
+                    # Comando psql para restaurar
+                    restore_command = [
+                        'psql',
+                        f"-h{db_settings['HOST']}",
+                        f"-p{db_settings['PORT']}",
+                        f"-U{db_settings['USER']}",
+                        f"-d{db_settings['NAME']}",
+                        '-v', 'ON_ERROR_STOP=1',
+                        '--single-transaction',
+                        '-f', sql_backup
+                    ]
+
+                    result = subprocess.run(
+                        restore_command,
+                        env=env,
+                        capture_output=True,
+                        text=True
+                    )
+
+                    if result.returncode != 0:
+                        raise Exception(f"Error en la restauración: {result.stderr}")
+
+                    messages.success(request, "Base de datos restaurada exitosamente.")
+
+                except Exception as e:
+                    raise Exception(f"Error al restaurar la base de datos: {str(e)}")
+
+            # Restaurar archivos media
+            media_backup = os.path.join(temp_dir, 'media')
+            if os.path.exists(media_backup):
+                media_path = settings.MEDIA_ROOT
+                if os.path.exists(media_path):
+                    shutil.rmtree(media_path)
+                shutil.copytree(media_backup, media_path)
+
+            messages.success(request, f"El backup {filename} ha sido restaurado exitosamente.")
+
+        except Exception as e:
+            messages.error(request, f"Error al restaurar el backup: {str(e)}")
+
+        finally:
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
+
     return redirect('backups:backup_status')

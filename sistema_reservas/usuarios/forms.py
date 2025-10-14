@@ -20,6 +20,18 @@ class BusquedaUsuarioForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
+    # Campo de filtro por Estado
+    estado = forms.ChoiceField(
+        required=False,
+        label='Estado',
+        choices=[
+            ('', 'Todos'),
+            ('activo', 'Activos'),
+            ('inactivo', 'Inactivos')
+        ],
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
 class UsuarioEditForm(forms.ModelForm):
 
     class Meta:
