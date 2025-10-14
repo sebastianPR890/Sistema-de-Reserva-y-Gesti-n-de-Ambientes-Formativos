@@ -1,11 +1,13 @@
-Django==5.2.6
-mysqlclient==2.2.7
-django-crispy-forms==2.3
-crispy-bootstrap4==2024.1
-Pillow==10.4.0
-python-dotenv==1.0.1
-django-extensions==3.2.3
-django-import-export==4.2.0
+Django
+mysqlclient
+django-crispy-forms
+crispy-bootstrap4
+Pillow
+python-dotenv
+django-extensions
+django-import-export
+pytz
+xhtml2pdf
 
 #pip install -r requirements.txt
 

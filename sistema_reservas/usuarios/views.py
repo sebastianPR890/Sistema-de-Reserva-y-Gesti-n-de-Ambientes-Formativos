@@ -103,4 +103,18 @@ def perfil_usuario(request):
 
 @login_required
 def editar_perfil(request):
-    return render(request, 'usuarios/editar_perfil.html', {})
+    if request.method == 'POST':
+        user = request.user
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+        user.telefono = request.POST.get('telefono')
+        
+        try:
+            user.save()
+            messages.success(request, 'Perfil actualizado exitosamente.')
+            return redirect('usuarios:perfil')
+        except Exception as e:
+            messages.error(request, f'Error al actualizar el perfil: {str(e)}')
+    
+    return render(request, 'usuarios/editar_perfil.html')
