@@ -1,4 +1,3 @@
-
 from django.utils.timezone import localtime
 from django.utils import timezone
 import io
@@ -20,13 +19,30 @@ def index(request):
 # Proteger todas las demás vistas
 @login_required
 def lista_reservas(request):
-    # Solo muestra las reservas del usuario logueado, a menos que sea superusuario
-    if request.user.is_superuser:
-        reservas = Reserva.objects.select_related('usuario').all() # 'ambiente' quitado temporalmente
+    # Determinar qué reservas mostrar basado en el tipo de usuario
+    if request.user.is_staff:
+        reservas = Reserva.objects.select_related('usuario', 'ambiente').all()
+        user_type = 'admin'
     else:
-        reservas = Reserva.objects.filter(usuario=request.user) # .select_related('ambiente') quitado temporalmente
-        
-    return render(request, 'reservas/lista_reservas.html', {'reservas': reservas})
+        reservas = Reserva.objects.select_related('ambiente').filter(usuario=request.user)
+        user_type = 'user'
+    
+    # Contadores para el dashboard
+    total_reservas = reservas.count()
+    reservas_pendientes = reservas.filter(estado='pendiente').count()
+    reservas_aprobadas = reservas.filter(estado='aprobada').count()
+    reservas_canceladas = reservas.filter(estado='cancelada').count()
+    
+    context = {
+        'reservas': reservas,
+        'total_reservas': total_reservas,
+        'reservas_pendientes': reservas_pendientes,
+        'reservas_aprobadas': reservas_aprobadas,
+        'reservas_canceladas': reservas_canceladas,
+        'user_type': user_type,
+    }
+    
+    return render(request, 'reservas/lista_reservas.html', context)
 
 
 @login_required
@@ -200,3 +216,47 @@ def descargar_manual_pdf(request):
         filename=filename,
         content_type='application/pdf'
     )
+
+@login_required
+def aprobar_reserva(request, pk):
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permisos para aprobar reservas.")
+        return redirect('reservas:lista_reservas')
+    
+    reserva = get_object_or_404(Reserva, pk=pk)
+    reserva.estado = 'aprobada'
+    reserva.aprobada_por = request.user
+    reserva.fecha_aprobacion = timezone.now()
+    reserva.save()
+    
+    # Crear notificación para el usuario
+    Notificacion.crear(
+        usuario=reserva.usuario,
+        titulo='Reserva Aprobada',
+        mensaje=f'Tu reserva para el {reserva.fecha_inicio.strftime("%d/%m/%Y")} ha sido aprobada.',
+        tipo='reserva'
+    )
+    
+    messages.success(request, "Reserva aprobada exitosamente.")
+    return redirect('reservas:lista_reservas')
+
+@login_required
+def cancelar_reserva(request, pk):
+    if not request.user.is_staff:
+        messages.error(request, "No tienes permisos para cancelar reservas.")
+        return redirect('reservas:lista_reservas')
+    
+    reserva = get_object_or_404(Reserva, pk=pk)
+    reserva.estado = 'cancelada'
+    reserva.save()
+    
+    # Crear notificación para el usuario
+    Notificacion.crear(
+        usuario=reserva.usuario,
+        titulo='Reserva Cancelada',
+        mensaje=f'Tu reserva para el {reserva.fecha_inicio.strftime("%d/%m/%Y")} ha sido cancelada.',
+        tipo='reserva'
+    )
+    
+    messages.success(request, "Reserva cancelada exitosamente.")
+    return redirect('reservas:lista_reservas')

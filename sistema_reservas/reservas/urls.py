@@ -14,4 +14,7 @@ urlpatterns = [
     path('manual/descargar/', views.descargar_manual_pdf, name='descargar_manual_pdf'),
 
     path('reporte/pdf/', views.descargar_reporte_pdf, name='descargar_reporte_pdf'),
+
+    path('reserva/<int:pk>/aprobar/', views.aprobar_reserva, name='aprobar_reserva'),
+    path('reserva/<int:pk>/cancelar/', views.cancelar_reserva, name='cancelar_reserva'),
 ]
