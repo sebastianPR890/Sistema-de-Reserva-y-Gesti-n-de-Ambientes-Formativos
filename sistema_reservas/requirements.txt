@@ -6,8 +6,8 @@ python-dotenv
 django-extensions
 django-import-export
 pytz
-xhtml2pdf
 psycopg2-binary
+reportlab
 
 #pip install -r requirements.txt
 

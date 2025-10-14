@@ -7,9 +7,11 @@ from django.contrib import messages
 from django.http import FileResponse, HttpResponseForbidden
 from .models import Reserva
 from notificaciones.models import Notificacion
-from django.template.loader import get_template
-from .forms import ReservaForm
-from xhtml2pdf import pisa
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 import pytz
 
 def index(request):
@@ -123,62 +125,69 @@ def eliminar_reserva(request, pk):
 
 @login_required
 def descargar_reporte_pdf(request):
-    # --- INICIO: Solución Naive para Evitar el Desfase de la Fecha de Generación ---
+    # Crear el buffer de bytes para el PDF
+    buffer = io.BytesIO()
     
-    # 1. Obtener la hora actual en la zona local (UTC-5)
-    # **Nota:** Asumimos que tu hora local es UTC-5 (America/Bogota)
-    local_tz = pytz.timezone('America/Bogota') 
+    # Crear el documento PDF
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
     
-    # 2. Obtener la hora actual en UTC
-    fecha_utc = timezone.now()
+    # Título
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=16,
+        spaceAfter=30,
+        alignment=1  # Centrado
+    )
+    elements.append(Paragraph("Reporte de Reservas", title_style))
     
-    # 3. Convertir a la hora local, obteniendo un objeto *aware* (consciente de la zona)
-    fecha_reporte_aware = fecha_utc.astimezone(local_tz)
-
-    # 4. Convertir el objeto *aware* a un objeto *naive* (sin zona horaria)
-    fecha_reporte_local = fecha_reporte_aware.replace(tzinfo=None) 
-    
-    # --- FIN: Solución Naive ---
-    
-    # Lógica para obtener las reservas a reportar
-    if request.user.is_superuser:
+    # Obtener las reservas
+    if request.user.is_staff:
         reservas = Reserva.objects.select_related('usuario', 'ambiente').all()
     else:
         reservas = Reserva.objects.filter(usuario=request.user).select_related('ambiente')
     
-    # Contexto para la plantilla PDF
-    contexto = {
-        'reservas': reservas,
-        'request': request,
-        'now': fecha_reporte_local, # <-- Usamos el objeto datetime Naive corregido
-    }
+    # Datos para la tabla
+    data = [['Ambiente', 'Fecha Inicio', 'Fecha Fin', 'Estado']]  # Encabezados
+    for reserva in reservas:
+        data.append([
+            reserva.ambiente.nombre,
+            reserva.fecha_inicio.strftime("%d/%m/%Y %H:%M"),
+            reserva.fecha_fin.strftime("%d/%m/%Y %H:%M"),
+            reserva.get_estado_display()
+        ])
     
-    # Obtener el template
-    template = get_template('reservas/reporte_reservas_pdf.html')
-    html = template.render(contexto)
+    # Crear tabla
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.green),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 10),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
     
-    # Crear el buffer de bytes para el PDF
-    buffer = io.BytesIO() # <-- Aquí se define 'buffer' en minúsculas
+    elements.append(table)
     
-    # Generar el PDF
-    pisa_status = pisa.CreatePDF(
-        html,
-        dest=buffer,
-        link_callback=None
-    )
-
-    if pisa_status.err:
-        messages.error(request, 'Ocurrió un error al generar el reporte PDF.')
-        return redirect('reservas:lista_reservas')
-
-    # Devolver el PDF como una respuesta de archivo descargable
-    buffer.seek(0) # <-- Corregido para usar 'buffer' en minúsculas
-    filename = f"reporte_reservas_{fecha_reporte_local.strftime('%Y%m%d_%H%M%S')}.pdf"
+    # Generar PDF
+    doc.build(elements)
     
+    # Preparar respuesta
+    buffer.seek(0)
     return FileResponse(
-        buffer, 
-        as_attachment=True, 
-        filename=filename,
+        buffer,
+        as_attachment=True,
+        filename=f'reporte_reservas_{timezone.now().strftime("%Y%m%d_%H%M")}.pdf',
         content_type='application/pdf'
     )
 
@@ -187,35 +196,10 @@ def manual_usuario(request):
     return render(request, 'manual/manual_usuario.html')
 
 def descargar_manual_pdf(request):
-    """Vista para generar y descargar el manual de usuario en PDF."""
-    # Obtener el template
-    template = get_template('manual/manual_usuario.html')
-    context = {} # El manual no necesita contexto dinámico por ahora
-    html = template.render(context)
-    
-    # Crear el buffer de bytes para el PDF
-    buffer = io.BytesIO()
-    
-    # Generar el PDF
-    pisa_status = pisa.CreatePDF(
-        html,
-        dest=buffer
-    )
-
-    if pisa_status.err:
-        messages.error(request, 'Ocurrió un error al generar el manual en PDF.')
-        return redirect('reservas:manual_usuario') # Redirigir a la página del manual si hay error
-
-    # Devolver el PDF como una respuesta de archivo descargable
-    buffer.seek(0)
-    filename = f"manual_de_usuario_sena.pdf"
-    
-    return FileResponse(
-        buffer, 
-        as_attachment=True, 
-        filename=filename,
-        content_type='application/pdf'
-    )
+    """
+    Versión simplificada que devuelve una vista HTML en lugar de PDF
+    """
+    return render(request, 'manual/manual_usuario.html')
 
 @login_required
 def aprobar_reserva(request, pk):
