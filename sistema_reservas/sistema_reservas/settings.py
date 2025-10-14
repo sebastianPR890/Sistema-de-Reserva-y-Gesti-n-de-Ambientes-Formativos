@@ -88,9 +88,13 @@ WSGI_APPLICATION = "sistema_reservas.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'masteruser',
+        'PASSWORD': 'Sena.clave#2025',
+        'HOST': 'db-sena-reservas-ambientes.cpq0museykin.us-east-2.rds.amazonaws.com',
+        'PORT': '5432'
     }
 }
 

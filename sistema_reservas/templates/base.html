@@ -19,6 +19,29 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
+    <meta name="accessibility-settings" content="enabled">
+    <script>
+        // Cargar configuración guardada inmediatamente
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const savedSettings = localStorage.getItem('accessibilitySettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    Object.entries(settings).forEach(([key, value]) => {
+                        if (value === true || (key === 'fontSize' && value > 0)) {
+                            document.body.classList.add(
+                                key === 'fontSize' 
+                                    ? `font-size-${value}` 
+                                    : key.replace(/[A-Z]/g, m => '-' + m.toLowerCase())
+                            );
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn('Error loading accessibility settings:', e);
+            }
+        });
+    </script>
 </head>
 
 <body class="{% if user.is_authenticated %}user-authenticated{% endif %} {% block body_class %}{% endblock %}">

@@ -1,5 +1,4 @@
 Django
-mysqlclient
 django-crispy-forms
 crispy-bootstrap4
 Pillow
@@ -8,6 +7,7 @@ django-extensions
 django-import-export
 pytz
 xhtml2pdf
+psycopg2-binary
 
 #pip install -r requirements.txt
 
