@@ -89,40 +89,20 @@ window.addEventListener('scroll', function() {
 
 
 /* =========================================
-    WIDGET DE ACCESIBILIDAD V3 - OPTIMIZADO
+    WIDGET DE ACCESIBILIDAD V2 - CORREGIDO
    ========================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    // Crear estilos dinámicamente
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = `
-        .font-size-1 { font-size: 110% !important; }
-        .font-size-2 { font-size: 120% !important; }
-        .font-size-3 { font-size: 130% !important; }
-        .high-contrast { 
-            filter: contrast(150%) !important;
-            background: white !important;
-            color: black !important;
-        }
-        .grayscale { filter: grayscale(100%) !important; }
-        .highlight-links a { 
-            background: yellow !important;
-            color: black !important;
-            text-decoration: underline !important;
-        }
-        .highlight-headers h1, 
-        .highlight-headers h2, 
-        .highlight-headers h3 { 
-            background: #ffeb3b !important;
-            padding: 5px !important;
-        }
-        .big-cursor, 
-        .big-cursor * { cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA/0lEQVR4Ae2WgQbDQBRFkxBCCCGEEEIIIYQQQggh9PvP2bHjx9nZ8QdjrTX3jHXvvTvz3nvvvffee++997333nvvvffee++9955nd0Yxu2N2x+yO2R2zO2Z3zO6Y3TG7Y3bH7I7ZHbN7/e69997X73vvvffee++9r9/33nvvvffee++999577733//F+GcfB7uM4Tdb7MAyu4zh43DOS9T4M1vs4jFyPg3VB1vul7axLz8nKoe8665yk73vrZB266TWRDt1oya4fLPPc91YXZJ3nrosiH0JvxVnf2vXSNNalKPPYNlYh6fveivPcNVVjx6mr8rGurB1k/QD3FZN6HhRMWQAAAABJRU5ErkJggg==') 12 12, auto !important; 
-        }
-    `;
-    document.head.appendChild(styleSheet);
+    const fab = document.getElementById('accessibility-fab');
+    const panel = document.getElementById('accessibility-panel');
+    const closeBtn = document.getElementById('close-accessibility-panel');
+    const gridButtons = document.querySelectorAll('.panel-grid button');
+    const body = document.body;
+
+    // Helper para convertir kebab-case a camelCase
+    const toCamelCase = str => str.replace(/-([a-z])/g, g => g[1].toUpperCase());
 
     const settings = {
-        fontSize: 0,
+        fontSize: 0, // 0: normal, 1, 2, 3
         highContrast: false,
         grayscale: false,
         highlightLinks: false,
@@ -130,28 +110,36 @@ document.addEventListener('DOMContentLoaded', () => {
         bigCursor: false,
     };
 
-    function applySettings() {
-        // Limpiar clases existentes
-        const classesToRemove = [
-            'font-size-1', 'font-size-2', 'font-size-3',
-            'high-contrast', 'grayscale', 'highlight-links',
-            'highlight-headers', 'big-cursor'
-        ];
-        document.body.classList.remove(...classesToRemove);
+    const FONT_CLASSES = ['', 'font-size-1', 'font-size-2', 'font-size-3'];
 
-        // Aplicar configuraciones actuales
-        if (settings.fontSize > 0) {
-            document.body.classList.add(`font-size-${settings.fontSize}`);
+    function loadSettings() {
+        const savedSettings = JSON.parse(localStorage.getItem('accessibilitySettings'));
+        if (savedSettings) {
+            Object.assign(settings, savedSettings);
         }
-        
-        Object.entries(settings).forEach(([key, value]) => {
-            if (key !== 'fontSize' && value === true) {
-                document.body.classList.add(key.replace(/[A-Z]/g, m => '-' + m.toLowerCase()));
-            }
-        });
+        applySettings();
+    }
 
-        // Guardar configuración
+    function saveSettings() {
         localStorage.setItem('accessibilitySettings', JSON.stringify(settings));
+    }
+
+    function applySettings() {
+        // Limpiar clases del body
+        body.className = body.className.split(' ').filter(c => !c.startsWith('font-size-') && !Object.keys(settings).map(k => k.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)).includes(c)).join(' ');
+        
+        // Aplicar clases de fuente
+        if (settings.fontSize > 0) {
+            body.classList.add(FONT_CLASSES[settings.fontSize]);
+        }
+
+        // Aplicar clases booleanas
+        for (const key in settings) {
+            if (key !== 'fontSize' && settings[key] === true) {
+                const kebabCaseKey = key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+                body.classList.add(kebabCaseKey);
+            }
+        }
         updateButtonsState();
     }
 
