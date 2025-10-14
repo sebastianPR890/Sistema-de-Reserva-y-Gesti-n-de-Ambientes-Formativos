@@ -86,3 +86,107 @@ window.addEventListener('scroll', function() {
         heroSection.style.transform = `translateY(${scrolled * 0.1}px)`;
     }
 });
+
+
+/* =========================================
+   WIDGET DE ACCESIBILIDAD V2 - CORREGIDO
+   ========================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    const fab = document.getElementById('accessibility-fab');
+    const panel = document.getElementById('accessibility-panel');
+    const closeBtn = document.getElementById('close-accessibility-panel');
+    const gridButtons = document.querySelectorAll('.panel-grid button');
+    const body = document.body;
+
+    // Helper para convertir kebab-case a camelCase
+    const toCamelCase = str => str.replace(/-([a-z])/g, g => g[1].toUpperCase());
+
+    const settings = {
+        fontSize: 0, // 0: normal, 1, 2, 3
+        highContrast: false,
+        grayscale: false,
+        highlightLinks: false,
+        highlightHeaders: false,
+        bigCursor: false,
+    };
+
+    const FONT_CLASSES = ['', 'font-size-1', 'font-size-2', 'font-size-3'];
+
+    function loadSettings() {
+        const savedSettings = JSON.parse(localStorage.getItem('accessibilitySettings'));
+        if (savedSettings) {
+            Object.assign(settings, savedSettings);
+        }
+        applySettings();
+    }
+
+    function saveSettings() {
+        localStorage.setItem('accessibilitySettings', JSON.stringify(settings));
+    }
+
+    function applySettings() {
+        // Limpiar clases del body
+        body.className = body.className.split(' ').filter(c => !c.startsWith('font-size-') && !Object.keys(settings).map(k => k.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)).includes(c)).join(' ');
+        
+        // Aplicar clases de fuente
+        if (settings.fontSize > 0) {
+            body.classList.add(FONT_CLASSES[settings.fontSize]);
+        }
+
+        // Aplicar clases booleanas
+        for (const key in settings) {
+            if (key !== 'fontSize' && settings[key] === true) {
+                const kebabCaseKey = key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+                body.classList.add(kebabCaseKey);
+            }
+        }
+        updateButtonsState();
+    }
+
+    function updateButtonsState() {
+        gridButtons.forEach(button => {
+            const action = button.dataset.action;
+            if (action === 'increase-text' || action === 'decrease-text' || action === 'reset') return;
+
+            const camelCaseAction = toCamelCase(action);
+            if (settings[camelCaseAction]) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+    }
+
+    fab.addEventListener('click', () => panel.classList.add('active'));
+    closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+
+    gridButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const action = button.dataset.action;
+            const camelCaseAction = toCamelCase(action);
+
+            switch (action) {
+                case 'increase-text':
+                    if (settings.fontSize < FONT_CLASSES.length - 1) settings.fontSize++;
+                    break;
+                case 'decrease-text':
+                    if (settings.fontSize > 0) settings.fontSize--;
+                    break;
+                case 'reset':
+                    for (const key in settings) {
+                        settings[key] = typeof settings[key] === 'boolean' ? false : 0;
+                    }
+                    break;
+                default:
+                    if (typeof settings[camelCaseAction] === 'boolean') {
+                        settings[camelCaseAction] = !settings[camelCaseAction];
+                    }
+                    break;
+            }
+            applySettings();
+            saveSettings();
+        });
+    });
+
+    loadSettings();
+});

@@ -8,10 +8,10 @@ from django.contrib import messages
 from django.http import FileResponse, HttpResponseForbidden
 from .models import Reserva
 from notificaciones.models import Notificacion
-from .forms import ReservaForm
-import pytz 
-from xhtml2pdf import pisa
 from django.template.loader import get_template
+from .forms import ReservaForm
+from xhtml2pdf import pisa
+import pytz
 
 def index(request):
     """Vista del index accesible para todos los usuarios."""
@@ -158,6 +158,41 @@ def descargar_reporte_pdf(request):
     # Devolver el PDF como una respuesta de archivo descargable
     buffer.seek(0) # <-- Corregido para usar 'buffer' en minúsculas
     filename = f"reporte_reservas_{fecha_reporte_local.strftime('%Y%m%d_%H%M%S')}.pdf"
+    
+    return FileResponse(
+        buffer, 
+        as_attachment=True, 
+        filename=filename,
+        content_type='application/pdf'
+    )
+
+def manual_usuario(request):
+    """Vista para mostrar el manual de usuario en HTML."""
+    return render(request, 'manual/manual_usuario.html')
+
+def descargar_manual_pdf(request):
+    """Vista para generar y descargar el manual de usuario en PDF."""
+    # Obtener el template
+    template = get_template('manual/manual_usuario.html')
+    context = {} # El manual no necesita contexto dinámico por ahora
+    html = template.render(context)
+    
+    # Crear el buffer de bytes para el PDF
+    buffer = io.BytesIO()
+    
+    # Generar el PDF
+    pisa_status = pisa.CreatePDF(
+        html,
+        dest=buffer
+    )
+
+    if pisa_status.err:
+        messages.error(request, 'Ocurrió un error al generar el manual en PDF.')
+        return redirect('reservas:manual_usuario') # Redirigir a la página del manual si hay error
+
+    # Devolver el PDF como una respuesta de archivo descargable
+    buffer.seek(0)
+    filename = f"manual_de_usuario_sena.pdf"
     
     return FileResponse(
         buffer, 

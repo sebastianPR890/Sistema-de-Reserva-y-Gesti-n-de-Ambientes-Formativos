@@ -768,3 +768,220 @@ body {
 .sienna-btn.sienna-btn-default {
     background-color: #1e7e34 !important;
 }
+
+/* =========================================
+   WIDGET DE ACCESIBILIDAD
+   ========================================== */
+
+/* Contenedor principal del widget */
+.accessibility-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+/* Botón flotante principal */
+.accessibility-fab {
+    background-color: #1e7e34;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accessibility-fab:hover {
+    background-color: #28a745;
+    transform: scale(1.1);
+}
+
+/* Panel de herramientas de accesibilidad */
+.accessibility-panel {
+    position: absolute;
+    bottom: 75px; /* Espacio sobre el botón flotante */
+    right: 0;
+    width: 320px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.accessibility-panel.active {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Encabezado del panel */
+.accessibility-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.accessibility-panel .panel-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.accessibility-panel .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.accessibility-panel .close-btn:hover {
+    color: #343a40;
+}
+
+/* Cuadrícula de botones */
+.accessibility-panel .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+.accessibility-panel .panel-grid button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.accessibility-panel .panel-grid button:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    transform: translateY(-2px);
+}
+
+.accessibility-panel .panel-grid button i {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    color: #1e7e34;
+}
+
+.accessibility-panel .panel-grid button.active {
+    background-color: #1e7e34;
+    color: white;
+    border-color: #1e7e34;
+}
+
+.accessibility-panel .panel-grid button.active i {
+    color: white;
+}
+
+
+/* --- CLASES DE ACCESIBILIDAD --- */
+
+/* Tamaños de fuente */
+body.font-size-1 { font-size: 110%; }
+body.font-size-2 { font-size: 120%; }
+body.font-size-3 { font-size: 130%; }
+
+/* Escala de grises */
+body.grayscale {
+    filter: grayscale(100%);
+}
+
+/* Alto contraste */
+body.high-contrast {
+    background: #000 !important;
+    color: #fff !important;
+}
+body.high-contrast .content-card,
+body.high-contrast .table-wrapper,
+body.high-contrast .sidebar,
+body.high-contrast .form-control,
+body.high-contrast .manual-card,
+body.high-contrast .manual-body,
+body.high-contrast .manual-footer,
+body.high-contrast .accessibility-panel {
+    background: #111 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+body.high-contrast .nav-link { color: #eee !important; }
+body.high-contrast .nav-link.active,
+body.high-contrast .nav-link:hover { background: #333 !important; color: #fff !important; }
+body.high-contrast .btn-primary { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+body.high-contrast .btn-secondary { background: #fff !important; color: #000 !important; }
+body.high-contrast .hero-title,
+body.high-contrast .manual-header { background: #222 !important; text-shadow: none !important; }
+body.high-contrast .text-success { color: #28a745 !important; }
+body.high-contrast .text-muted { color: #ccc !important; }
+body.high-contrast .accessibility-panel .panel-header,
+body.high-contrast .accessibility-panel .panel-grid button {
+    background: #222 !important;
+    color: #fff !important;
+    border-color: #444 !important;
+}
+body.high-contrast .accessibility-panel .panel-grid button i {
+    color: #28a745 !important;
+}
+body.high-contrast .accessibility-panel .panel-grid button.active {
+    background-color: #28a745 !important;
+    color: #000 !important;
+    border-color: #28a745 !important;
+}
+body.high-contrast .accessibility-panel .panel-grid button.active i {
+    color: #000 !important;
+}
+
+
+/* Resaltar enlaces */
+body.highlight-links a {
+    background-color: yellow !important;
+    color: black !important;
+    text-decoration: underline !important;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Resaltar encabezados */
+body.highlight-headers h1,
+body.highlight-headers h2,
+body.highlight-headers h3,
+body.highlight-headers h4,
+body.highlight-headers h5,
+body.highlight-headers h6 {
+    background-color: rgba(255, 255, 0, 0.5) !important;
+    padding: 4px;
+    border-left: 4px solid #1e7e34;
+}
+
+/* Cursor grande */
+body.big-cursor, body.big-cursor * {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path fill="black" d="M24.5,3.125 C24.5,3.125 24.5,3.125 24.5,3.125 C24.5,3.125 24.5,3.125 24.5,3.125 C24.5,3.125 24.5,3.125 24.5,3.125 C24.5,3.125 24.5,3.125 24.5,3.125 L24.5,44.875 L24.5,44.875 C24.5,44.875 24.5,44.875 24.5,44.875 C24.5,44.875 24.5,44.875 24.5,44.875 C24.5,44.875 24.5,44.875 24.5,44.875 C24.5,44.875 24.5,44.875 24.5,44.875 L24.5,3.125 Z M3.125,24.5 C3.125,24.5 3.125,24.5 3.125,24.5 C3.125,24.5 3.125,24.5 3.125,24.5 C3.125,24.5 3.125,24.5 3.125,24.5 C3.125,24.5 3.125,24.5 3.125,24.5 L44.875,24.5 L44.875,24.5 C44.875,24.5 44.875,24.5 44.875,24.5 C44.875,24.5 44.875,24.5 44.875,24.5 C44.875,24.5 44.875,24.5 44.875,24.5 C44.875,24.5 44.875,24.5 44.875,24.5 L3.125,24.5 Z" transform="rotate(45, 24, 24)" /></svg>'), auto !important;
+}

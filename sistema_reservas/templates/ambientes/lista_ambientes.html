@@ -24,62 +24,125 @@
             </div>
         </div>
 
-        <!-- Search Card -->
+        <!-- Search and Filter Card MEJORADA -->
         <div class="card border-0 shadow-lg rounded-4 mb-4 animate__animated animate__fadeInUp">
             <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="fas fa-search me-2 text-success"></i>
+                        Buscar y Filtrar Ambientes
+                    </h5>
+                    <button class="btn btn-sm btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                        <i class="fas fa-sliders-h me-1"></i>
+                        Filtros Avanzados
+                    </button>
+                </div>
+
                 <form method="get" id="searchForm">
-                    {% csrf_token %}
-                    
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-5">
-                            <label class="form-label text-muted fw-bold">Buscar por Nombre/Código</label>
-                            {{ form_busqueda.busqueda }}
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-bold">Filtrar por Tipo</label>
-                            {{ form_busqueda.tipo }}
-                        </div>
-                        
-                        <div class="col-md-3">
-                            <label class="form-label text-muted fw-bold">Capacidad Mínima</label>
-                            {{ form_busqueda.capacidad_min }}
-                        </div>
-                    </div>
-                    
-                    <h6 class="text-secondary mb-3"><i class="fas fa-filter me-1"></i> Filtros de Equipamiento y Estado</h6>
-                    <hr class="mt-0 mb-3">
-                    <div class="row g-3 mb-4">
-                        
-                        
-                        <div class="col-md-6">
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ form_busqueda.solo_activos.id_for_label }}" name="{{ form_busqueda.solo_activos.name }}" {% if form_busqueda.solo_activos.value %}checked{% endif %} value="on">
-                                <label class="form-check-label" for="{{ form_busqueda.solo_activos.id_for_label }}">
-                                    <i class="fas fa-check-circle me-1 text-success"></i> {{ form_busqueda.solo_activos.label }}
-                                </label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="{{ form_busqueda.con_computadores.id_for_label }}" name="{{ form_busqueda.con_computadores.name }}" {% if form_busqueda.con_computadores.value %}checked{% endif %} value="on">
-                                <label class="form-check-label" for="{{ form_busqueda.con_computadores.id_for_label }}">
-                                    <i class="fas fa-desktop me-1 text-info"></i> {{ form_busqueda.con_computadores.label }}
-                                </label>
+                    <!-- Búsqueda Principal -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-lg-6">
+                            <div class="search-input-wrapper">
+                                <div class="input-group input-group-modern">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input 
+                                        type="text" 
+                                        name="busqueda" 
+                                        class="form-control form-control-lg" 
+                                        placeholder="Buscar por nombre o código del ambiente..."
+                                        value="{{ request.GET.busqueda }}"
+                                        id="busquedaInput"
+                                    >
+                                    <button class="btn btn-success" type="submit">
+                                        <i class="fas fa-search me-1"></i>Buscar
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="filter-select-wrapper">
+                                <label class="form-label text-muted fw-semibold mb-2">
+                                    <i class="fas fa-layer-group me-1 text-success"></i>Tipo de Ambiente
+                                </label>
+                                {{ form_busqueda.tipo }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6">
+                            <div class="filter-select-wrapper">
+                                <label class="form-label text-muted fw-semibold mb-2">
+                                    <i class="fas fa-users me-1 text-success"></i>Capacidad Mínima
+                                </label>
+                                {{ form_busqueda.capacidad_min }}
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{% url 'ambientes:lista' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-eraser me-1"></i> Limpiar Filtros
-                        </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-filter me-1"></i> Aplicar Filtros
-                        </button>
+
+                    <!-- Filtros Avanzados (Colapsable) -->
+                    <div class="collapse" id="advancedFilters">
+                        <div class="advanced-filters-section p-4 rounded-3 mb-3">
+                            <h6 class="text-success fw-bold mb-3">
+                                <i class="fas fa-filter me-2"></i>
+                                Filtros Adicionales
+                            </h6>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="filter-group">
+                                        <h6 class="text-dark fw-semibold mb-3">Estado y Disponibilidad</h6>
+                                        <div class="form-check form-switch form-switch-lg mb-3">
+                                            {{ form_busqueda.solo_activos }}
+                                            <label class="form-check-label" for="{{ form_busqueda.solo_activos.id_for_label }}">
+                                                <i class="fas fa-check-circle me-1 text-success"></i>
+                                                {{ form_busqueda.solo_activos.label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="filter-group">
+                                        <h6 class="text-dark fw-semibold mb-3">Equipamiento</h6>
+                                        <div class="form-check form-switch form-switch-lg mb-3">
+                                            {{ form_busqueda.con_computadores }}
+                                            <label class="form-check-label" for="{{ form_busqueda.con_computadores.id_for_label }}">
+                                                <i class="fas fa-desktop me-1 text-primary"></i>
+                                                {{ form_busqueda.con_computadores.label }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="filter-summary">
+                            <span class="text-muted small">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Mostrando <strong class="text-success">{{ ambientes|length }}</strong> resultados
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'ambientes:lista' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-1"></i>Limpiar
+                            </a>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="fas fa-check me-1"></i>Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Filters Tags -->
+                    <div id="activeFilters" class="active-filters mt-3"></div>
                 </form>
             </div>
         </div>
-        <hr>
 
         <!-- Stats Summary -->
         <div class="row g-3 mb-4">
@@ -272,6 +335,175 @@
     font-size: 2rem;
 }
 
+/* ===== ESTILOS DE LA BARRA DE FILTROS MEJORADA ===== */
+/* Search Input Styling */
+.search-input-wrapper {
+    position: relative;
+}
+
+.input-group-modern {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.input-group-modern .input-group-text {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.25rem;
+}
+
+.input-group-modern .form-control {
+    border: 2px solid #e9ecef;
+    border-left: none;
+    border-right: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+}
+
+.input-group-modern .form-control:focus {
+    border-color: #28a745;
+    box-shadow: none;
+}
+
+.input-group-modern .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Filter Select Styling */
+.filter-select-wrapper .form-select,
+.filter-select-wrapper .form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.filter-select-wrapper .form-select:focus,
+.filter-select-wrapper .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+    background-color: white;
+}
+
+.filter-select-wrapper .form-select:hover,
+.filter-select-wrapper .form-control:hover {
+    border-color: #28a745;
+    background-color: white;
+}
+
+/* Advanced Filters Section */
+.advanced-filters-section {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.03) 0%, rgba(32, 201, 151, 0.03) 100%);
+    border: 2px dashed #28a745;
+}
+
+.filter-group {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e9ecef;
+}
+
+/* Form Switch Styling */
+.form-switch-lg .form-check-input {
+    width: 3.5rem;
+    height: 1.75rem;
+    cursor: pointer;
+    border: 2px solid #dee2e6;
+}
+
+.form-switch-lg .form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+}
+
+.form-switch-lg .form-check-label {
+    margin-left: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Active Filters Tags */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    animation: slideInDown 0.3s ease;
+}
+
+.filter-tag .remove-filter {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.filter-tag .remove-filter:hover {
+    opacity: 1;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Filter Summary */
+.filter-summary {
+    padding: 0.5rem 0;
+}
+
+/* Loading Animation */
+.btn.loading {
+    pointer-events: none;
+    position: relative;
+}
+
+.btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== FIN ESTILOS BARRA DE FILTROS ===== */
+
 /* Stat Cards Small */
 .stat-card-small {
     transition: all 0.3s ease;
@@ -404,6 +636,19 @@
     transform: translateY(-2px);
 }
 
+.btn-outline-success {
+    border: 2px solid #28a745;
+    color: #28a745;
+    font-weight: 600;
+}
+
+.btn-outline-success:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
 /* Empty State */
 .empty-icon {
     width: 120px;
@@ -452,27 +697,6 @@
     color: #6c757d;
 }
 
-/* Form Styling */
-#searchForm .form-label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-#searchForm .form-control,
-#searchForm .form-select {
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 0.625rem 1rem;
-    transition: all 0.3s ease;
-}
-
-#searchForm .form-control:focus,
-#searchForm .form-select:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .page-header h1 {
@@ -488,45 +712,113 @@
         height: 45px;
         font-size: 1.1rem;
     }
-}
-
-#searchForm .form-label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-#searchForm .form-control,
-#searchForm .form-select {
-    border: 2px solid #e9ecef;
-    border-radius: 0.75rem;
-    padding: 0.625rem 1rem;
-    transition: all 0.3s ease;
-}
-
-#searchForm .form-control:focus,
-#searchForm .form-select:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+    
+    .input-group-modern .btn {
+        width: 100%;
+        margin-top: 0.5rem;
+        border-radius: 0.75rem !important;
+    }
+    
+    .input-group-modern {
+        flex-direction: column;
+    }
+    
+    .input-group-modern .form-control {
+        border: 2px solid #e9ecef !important;
+        border-radius: 0 !important;
+    }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Add Bootstrap classes to form fields
     const form = document.getElementById('searchForm');
-    if (form) {
-        const inputs = form.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (!input.classList.contains('form-control') && !input.classList.contains('form-select')) {
-                if (input.tagName === 'SELECT') {
-                    input.classList.add('form-select');
-                } else {
-                    input.classList.add('form-control');
-                }
+    const activeFiltersContainer = document.getElementById('activeFilters');
+    
+    // Add Bootstrap classes to form fields
+    const formControls = form.querySelectorAll('input:not([type="checkbox"]), select, textarea');
+    formControls.forEach(control => {
+        if (!control.classList.contains('form-control') && !control.classList.contains('form-select')) {
+            if (control.tagName === 'SELECT') {
+                control.classList.add('form-select', 'form-select-lg');
+            } else if (!control.classList.contains('form-check-input')) {
+                control.classList.add('form-control');
             }
+        }
+    });
+
+    // Add class to checkboxes
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.classList.add('form-check-input');
+    });
+    
+    // Auto-submit on filter change
+    const autoSubmitElements = form.querySelectorAll('select, input[type="checkbox"]');
+    autoSubmitElements.forEach(element => {
+        element.addEventListener('change', function() {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            setTimeout(() => form.submit(), 300);
         });
+    });
+    
+    // Display active filters as tags
+    function displayActiveFilters() {
+        activeFiltersContainer.innerHTML = '';
+        const formData = new FormData(form);
+        const activeFilters = [];
+        
+        for (let [key, value] of formData.entries()) {
+            if (value && key !== 'csrfmiddlewaretoken' && key !== 'busqueda') {
+                const input = form.querySelector(`[name="${key}"]`);
+                let label = '';
+                
+                if (input?.type === 'checkbox') {
+                    label = input.nextElementSibling?.textContent || key;
+                } else {
+                    label = input?.previousElementSibling?.textContent || key;
+                }
+                
+                label = label.replace(/\*/g, '').trim().substring(0, 30);
+                activeFilters.push({ key, value, label });
+            }
+        }
+        
+        if (activeFilters.length > 0) {
+            activeFiltersContainer.style.display = 'flex';
+            activeFilters.forEach(filter => {
+                const tag = document.createElement('span');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `
+                    <span>${filter.label}</span>
+                    <i class="fas fa-times remove-filter" data-filter="${filter.key}"></i>
+                `;
+                activeFiltersContainer.appendChild(tag);
+            });
+            
+            // Add event listeners to remove buttons
+            activeFiltersContainer.querySelectorAll('.remove-filter').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filterName = this.getAttribute('data-filter');
+                    const input = form.querySelector(`[name="${filterName}"]`);
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            input.checked = false;
+                        } else {
+                            input.value = '';
+                        }
+                        form.submit();
+                    }
+                });
+            });
+        } else {
+            activeFiltersContainer.style.display = 'none';
+        }
     }
+    
+    displayActiveFilters();
 
     // Animate cards on scroll
     const observerOptions = {
