@@ -733,7 +733,19 @@
                                         {% if field.errors %}
                                             <div class="error-message">
                                                 <i class="fas fa-exclamation-circle"></i>
-                                                {{ field.errors|join:", " }}
+                                                {% if 'required' in field.errors|join:" " %}
+                                                    Este campo es obligatorio.
+                                                {% elif 'unique' in field.errors|join:" " %}
+                                                    Este {{ field.label }} ya está registrado.
+                                                {% elif 'password2' in field.html_name %}
+                                                    Las contraseñas no coinciden.
+                                                {% elif 'email' in field.errors|join:" " %}
+                                                    Ingrese un correo electrónico válido.
+                                                {% elif 'min_length' in field.errors|join:" " %}
+                                                    La contraseña debe tener al menos 8 caracteres.
+                                                {% else %}
+                                                    {{ field.errors|join:", " }}
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
@@ -760,7 +772,19 @@
                                         {% if field.errors %}
                                             <div class="error-message">
                                                 <i class="fas fa-exclamation-circle"></i>
-                                                {{ field.errors|join:", " }}
+                                                {% if 'required' in field.errors|join:" " %}
+                                                    Este campo es obligatorio.
+                                                {% elif 'unique' in field.errors|join:" " %}
+                                                    Este {{ field.label }} ya está registrado.
+                                                {% elif 'password2' in field.html_name %}
+                                                    Las contraseñas no coinciden.
+                                                {% elif 'email' in field.errors|join:" " %}
+                                                    Ingrese un correo electrónico válido.
+                                                {% elif 'min_length' in field.errors|join:" " %}
+                                                    La contraseña debe tener al menos 8 caracteres.
+                                                {% else %}
+                                                    {{ field.errors|join:", " }}
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
@@ -794,7 +818,19 @@
                                             {% if field.errors %}
                                                 <div class="error-message">
                                                     <i class="fas fa-exclamation-circle"></i>
-                                                    {{ field.errors|join:", " }}
+                                                    {% if 'required' in field.errors|join:" " %}
+                                                        Este campo es obligatorio.
+                                                    {% elif 'unique' in field.errors|join:" " %}
+                                                        Este {{ field.label }} ya está registrado.
+                                                    {% elif 'password2' in field.html_name %}
+                                                        Las contraseñas no coinciden.
+                                                    {% elif 'email' in field.errors|join:" " %}
+                                                        Ingrese un correo electrónico válido.
+                                                    {% elif 'min_length' in field.errors|join:" " %}
+                                                        La contraseña debe tener al menos 8 caracteres.
+                                                    {% else %}
+                                                        {{ field.errors|join:", " }}
+                                                    {% endif %}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -809,7 +845,19 @@
                                         {% if field.errors %}
                                             <div class="error-message">
                                                 <i class="fas fa-exclamation-circle"></i>
-                                                {{ field.errors|join:", " }}
+                                                {% if 'required' in field.errors|join:" " %}
+                                                    Este campo es obligatorio.
+                                                {% elif 'unique' in field.errors|join:" " %}
+                                                    Este {{ field.label }} ya está registrado.
+                                                {% elif 'password2' in field.html_name %}
+                                                    Las contraseñas no coinciden.
+                                                {% elif 'email' in field.errors|join:" " %}
+                                                    Ingrese un correo electrónico válido.
+                                                {% elif 'min_length' in field.errors|join:" " %}
+                                                    La contraseña debe tener al menos 8 caracteres.
+                                                {% else %}
+                                                    {{ field.errors|join:", " }}
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>
@@ -828,7 +876,19 @@
                                             {% if field.errors %}
                                                 <div class="error-message">
                                                     <i class="fas fa-exclamation-circle"></i>
-                                                    {{ field.errors|join:", " }}
+                                                    {% if 'required' in field.errors|join:" " %}
+                                                        Este campo es obligatorio.
+                                                    {% elif 'unique' in field.errors|join:" " %}
+                                                        Este {{ field.label }} ya está registrado.
+                                                    {% elif 'password2' in field.html_name %}
+                                                        Las contraseñas no coinciden.
+                                                    {% elif 'email' in field.errors|join:" " %}
+                                                        Ingrese un correo electrónico válido.
+                                                    {% elif 'min_length' in field.errors|join:" " %}
+                                                        La contraseña debe tener al menos 8 caracteres.
+                                                    {% else %}
+                                                        {{ field.errors|join:", " }}
+                                                    {% endif %}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -871,7 +931,19 @@
                                         {% if field.errors %}
                                             <div class="error-message">
                                                 <i class="fas fa-exclamation-circle"></i>
-                                                {{ field.errors|join:", " }}
+                                                {% if 'required' in field.errors|join:" " %}
+                                                    Este campo es obligatorio.
+                                                {% elif 'unique' in field.errors|join:" " %}
+                                                    Este {{ field.label }} ya está registrado.
+                                                {% elif 'password2' in field.html_name %}
+                                                    Las contraseñas no coinciden.
+                                                {% elif 'email' in field.errors|join:" " %}
+                                                    Ingrese un correo electrónico válido.
+                                                {% elif 'min_length' in field.errors|join:" " %}
+                                                    La contraseña debe tener al menos 8 caracteres.
+                                                {% else %}
+                                                    {{ field.errors|join:", " }}
+                                                {% endif %}
                                             </div>
                                         {% endif %}
                                     </div>

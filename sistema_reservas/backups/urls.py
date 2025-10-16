@@ -4,11 +4,9 @@ from . import views
 app_name = 'backups'
 
 urlpatterns = [
-    path('run/', views.run_backup, name='run_backup'),
-    path('status/', views.backup_status, name='backup_status'),
-    path('download/<str:filename>/', views.download_backup, name='download_backup'),
-    path('delete/<str:filename>/', views.delete_backup, name='delete_backup'),
-    # Asegúrate de que esta ruta esté correcta
-    path('restore/<str:filename>/', views.restore_backup, name='restore_backup'), 
-    path('restore-file/<str:filename>/', views.restore_backup_file, name='restore_backup_file'),
+    path('', views.backup_dashboard, name='backup_dashboard'),
+    path('create/', views.create_backup_view, name='create_backup'),
+    path('restore/<str:filename>/', views.restore_backup_view, name='restore_backup'),
+    path('delete/<str:filename>/', views.delete_backup_view, name='delete_backup'),
+    path('download/<str:filename>/', views.download_backup_view, name='download_backup'),
 ]

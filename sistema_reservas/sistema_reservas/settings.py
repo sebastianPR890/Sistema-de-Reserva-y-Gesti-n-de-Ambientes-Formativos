@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "notificaciones",
     "reservas",
     "usuarios",
-    "login",  # Agregar la app de login
+    "login",
     "backups",
 ]
 
@@ -87,14 +87,23 @@ WSGI_APPLICATION = "sistema_reservas.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'masteruser',
-        'PASSWORD': 'Sena.clave#2025',
-        'HOST': 'db-sena-reservas-ambientes.cpq0museykin.us-east-2.rds.amazonaws.com',
-        'PORT': '5432'
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        }
     }
 }
 
@@ -121,7 +130,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "es"
 
 TIME_ZONE = "UTC"
 
@@ -153,3 +162,15 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 MYSQLDUMP_PATH = r'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe'
 MYSQL_PATH = r'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
+
+import os
+from pathlib import Path
+
+# Directorio donde se guardarán los backups
+BACKUP_DIR = os.path.join(BASE_DIR, 'backups/backups_created')
+
+# Crear el directorio si no existe
+Path(BACKUP_DIR).mkdir(parents=True, exist_ok=True)
+
+# Número máximo de backups a mantener
+MAX_BACKUPS = 50

@@ -51,12 +51,7 @@
             <!-- base de datos (backups)-->
             <div class="nav-item">
                 {% if user.is_staff %}
-                <a href="{% url 'backups:run_backup' %}" class="nav-link"><i class="fas fa-database nav-icon {% if request.resolver_match.app_name == 'ejecutar_backup' %}active{% endif %}"></i>Ejecutar Backup</a>
-                {% endif %}
-            </div>
-            <div class="nav-item">
-                {% if user.is_staff %}
-                <a href="{% url 'backups:backup_status' %}" class="nav-link"><i class="fas fa-history nav-icon {% if request.resolver_match.app_name == 'estado_backups' %}active{% endif %}"></i>Estado Backups</a>
+                <a href="{% url 'backups:backup_dashboard' %}" class="nav-link {% if request.resolver_match.app_name == 'backups' %}active{% endif %}"><i class="fas fa-database nav-icon"></i>Backups</a>
                 {% endif %}
             </div>
             <div class="nav-item">

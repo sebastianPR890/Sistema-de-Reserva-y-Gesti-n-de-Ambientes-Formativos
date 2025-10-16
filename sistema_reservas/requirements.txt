@@ -6,9 +6,8 @@ python-dotenv
 django-extensions
 django-import-export
 pytz
-psycopg2-binary
+mysqlclient
 reportlab
 
 #pip install -r requirements.txt
-
 #python version 3.13.5
