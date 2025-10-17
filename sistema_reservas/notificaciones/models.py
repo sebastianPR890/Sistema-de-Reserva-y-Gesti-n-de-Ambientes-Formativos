@@ -27,13 +27,34 @@ class Notificacion(models.Model):
     
     @classmethod
     def crear(cls, usuario, titulo, mensaje, tipo='sistema'):
-        """crea una notificación"""
-        return cls.objects.create(
+        """crea una notificación y envía un correo electrónico HTML"""
+        from django.core.mail import EmailMultiAlternatives
+        from django.template.loader import render_to_string
+        from django.utils.html import strip_tags
+
+        notificacion = cls.objects.create(
             usuario=usuario,
             titulo=titulo,
             mensaje=mensaje,
             tipo=tipo
         )
+
+        # Renderizar el template HTML
+        html_content = render_to_string('email/notification.html', {'titulo': titulo, 'mensaje': mensaje})
+        # Crear una versión de texto plano como fallback
+        text_content = strip_tags(html_content)
+
+        # Enviar correo electrónico
+        msg = EmailMultiAlternatives(
+            titulo,
+            text_content,
+            'noreply@sistemareservas.com',
+            [usuario.email]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send(fail_silently=False)
+
+        return notificacion
     def marcar_como_leida(self):
         """marca la notificación como leída"""
         self.leida = True

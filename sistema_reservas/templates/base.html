@@ -40,6 +40,9 @@
                 <a href="{% url 'ambientes:lista' %}" class="nav-link {% if request.resolver_match.app_name == 'ambientes' %}active{% endif %}"><i class="fas fa-door-open nav-icon"></i>Ambientes</a>
             </div>
             <div class="nav-item">
+                <a href="{% url 'equipos:lista' %}" class="nav-link {% if request.resolver_match.app_name == 'equipos' %}active{% endif %}"><i class="fas fa-desktop nav-icon"></i>Equipos</a>
+            </div>
+            <div class="nav-item">
                 <!-- solo superuser-->
                 {% if user.is_staff %}
                 <a href="{% url 'usuarios:lista_usuarios' %}" class="nav-link {% if request.resolver_match.app_name == 'usuarios' %}active{% endif %}"><i class="fas fa-users nav-icon"></i>Usuarios</a>

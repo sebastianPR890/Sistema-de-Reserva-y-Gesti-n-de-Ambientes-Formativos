@@ -9,7 +9,7 @@ class EquipoForm(forms.ModelForm):
         model = Equipo
         fields = [
             'codigo', 'nombre', 'descripcion', 'marca', 'modelo', 'serie',
-            'estado'
+            'ambiente', 'estado'
         ]
         widgets = {
             'codigo': forms.TextInput(attrs={'class': 'form-control'}),
@@ -18,6 +18,7 @@ class EquipoForm(forms.ModelForm):
             'marca': forms.TextInput(attrs={'class': 'form-control'}),
             'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'serie': forms.TextInput(attrs={'class': 'form-control'}),
+            'ambiente': forms.Select(attrs={'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
         }
     

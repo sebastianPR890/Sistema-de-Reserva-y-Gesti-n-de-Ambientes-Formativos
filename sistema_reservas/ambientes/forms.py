@@ -72,6 +72,13 @@ class AmbienteForm(forms.ModelForm):
             self.fields['tiene_tablero_digital'].initial = recursos.get('tablero_digital', False)
             self.fields['observaciones'].initial = recursos.get('observaciones', '')
     
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if nombre:
+            if Ambiente.objects.filter(nombre__iexact=nombre).exclude(pk=self.instance.pk if self.instance else None).exists():
+                raise ValidationError('Ya existe un ambiente con este nombre.')
+        return nombre
+
     def clean_codigo(self):
         codigo = self.cleaned_data.get('codigo')
         if codigo:
@@ -167,3 +174,9 @@ class CrearAmbienteForm(forms.ModelForm):
             'tipo': forms.Select(attrs={'class': 'form-control'}),
             'ubicacion': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if Ambiente.objects.filter(nombre__iexact=nombre).exists():
+            raise ValidationError("Ya existe un ambiente con este nombre.")
+        return nombre

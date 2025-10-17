@@ -13,16 +13,6 @@
 
             <!-- Header -->
             <div class="mb-4 animate__animated animate__fadeInDown">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-transparent">
-                        <li class="breadcrumb-item"><a href="/" class="text-white text-decoration-none"><i class="fas fa-home me-1"></i>Inicio</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'ambientes:lista' %}" class="text-white text-decoration-none">Ambientes</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'ambientes:detalle' ambiente.pk %}" class="text-white text-decoration-none">{{ ambiente.nombre }}</a></li>
-                        <li class="breadcrumb-item active text-white-50" aria-current="page">
-                            {% if form.instance.pk %}Editar Equipo{% else %}Agregar Equipo{% endif %}
-                        </li>
-                    </ol>
-                </nav>
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div>
                         <h1 class="display-6 fw-bold text-white mb-2">
@@ -40,12 +30,8 @@
                             {% endif %}
                         </p>
                     </div>
-                    <a href="{% url 'ambientes:detalle' ambiente.pk %}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left me-2"></i>Volver al Ambiente
-                    </a>
                 </div>
             </div>
-
             <!-- Form Card -->
             <div class="card border-0 shadow-lg rounded-4 animate__animated animate__fadeInUp">
                 <div class="card-body p-4 p-md-5">
@@ -80,6 +66,9 @@
                                 </div>
                                 <div class="col-md-4">
                                     {% include 'partials/form_field.html' with field=form.estado %}
+                                </div>
+                                <div class="col-md-4">
+                                    {% include 'partials/form_field.html' with field=form.ambiente %}
                                 </div>
                             </div>
                         </div>
@@ -127,9 +116,6 @@
 
                         <!-- Botones de Acción -->
                         <div class="d-flex gap-3 justify-content-end flex-wrap">
-                            <a href="{% url 'ambientes:detalle' ambiente.pk %}" class="btn btn-outline-secondary btn-lg px-4">
-                                <i class="fas fa-times me-2"></i>Cancelar
-                            </a>
                             <button type="submit" class="btn btn-success btn-lg px-5">
                                 <i class="fas fa-save me-2"></i>Guardar Cambios
                             </button>

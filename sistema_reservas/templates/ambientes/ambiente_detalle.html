@@ -233,6 +233,20 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Edit/Delete Buttons for Staff -->
+        {% if user.is_staff %}
+        <div class="d-flex justify-content-end mt-4">
+            <div class="btn-group">
+                <a href="{% url 'ambientes:editar' ambiente.pk %}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Editar
+                </a>
+                <a href="{% url 'ambientes:eliminar' ambiente.pk %}" class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>Eliminar
+                </a>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

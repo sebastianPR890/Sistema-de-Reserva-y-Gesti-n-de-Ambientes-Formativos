@@ -87,19 +87,15 @@ WSGI_APPLICATION = "sistema_reservas.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': 'sistema_reservas',
+        'USER': 'sistema_reservas_user',
+        'PASSWORD': 'masterpassword',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
@@ -151,12 +147,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sistemareservassena@gmail.com'
-EMAIL_HOST_PASSWORD = 'etjr tbvd rjzr hgfo'
+EMAIL_HOST_PASSWORD = 'bafu tecn wkdr dwcx'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 

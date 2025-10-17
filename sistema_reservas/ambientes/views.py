@@ -8,12 +8,18 @@ from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse
 from django.utils import timezone
 from datetime import datetime, timedelta
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Ambiente
 from .forms import AmbienteForm, BusquedaAmbienteForm, CrearAmbienteForm
 from equipos.forms import EquipoForm
 from equipos.models import Equipo
 
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+@login_required
 def lista_ambientes(request):
     """
     Vista para listar, buscar y filtrar ambientes.
@@ -86,27 +92,27 @@ def lista_ambientes(request):
     }
     return render(request, 'ambientes/lista_ambientes.html', context)
 
-class AmbienteCreateView( CreateView):
+class AmbienteCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
     """
     Vista genérica para crear un nuevo ambiente.
     """
     model = Ambiente
     form_class = AmbienteForm
     template_name = 'ambientes/ambiente_form.html'
-    success_url = reverse_lazy('ambientes:lista_ambientes')
+    success_url = reverse_lazy('ambientes:lista')
 
     def form_valid(self, form):
         messages.success(self.request, "Ambiente creado exitosamente.")
         return super().form_valid(form)
 
-class AmbienteUpdateView( UpdateView):
+class AmbienteUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
     """
     Vista genérica para editar un ambiente existente.
     """
     model = Ambiente
     form_class = AmbienteForm
     template_name = 'ambientes/ambiente_form.html'
-    success_url = reverse_lazy('ambientes:lista_ambientes')
+    success_url = reverse_lazy('ambientes:lista')
 
     def form_valid(self, form):
         messages.success(self.request, "Ambiente actualizado exitosamente.")
@@ -120,13 +126,13 @@ class AmbienteDetailView( DetailView):
     template_name = 'ambientes/ambiente_detalle.html'
     context_object_name = 'ambiente'
 
-class AmbienteDeleteView( DeleteView):
+class AmbienteDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
     """
     Vista genérica para eliminar un ambiente.
     """
     model = Ambiente
     template_name = 'ambientes/ambiente_confirm_delete.html'
-    success_url = reverse_lazy('ambientes:lista_ambientes')
+    success_url = reverse_lazy('ambientes:lista')
 
     def form_valid(self, form):
         messages.success(self.request, "Ambiente eliminado exitosamente.")
@@ -206,7 +212,7 @@ def agregar_equipo(request, ambiente_id):
     else:
         form = EquipoForm()
     
-    return render(request, 'ambientes/agregar_equipo.html', {
+    return render(request, 'equipos/equipo_form.html', {
         'form': form,
         'ambiente': ambiente
     })
