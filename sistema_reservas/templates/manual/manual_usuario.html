@@ -93,9 +93,9 @@
 
                     <!-- Botón de descarga -->
                     <div class="text-center mt-5 pt-4">
-                        <button id="download-btn" class="btn btn-download px-5 py-3 fs-5 fw-semibold">
+                        <a href="{% static 'docs/manual_usuario.pdf' %}" class="btn btn-download px-5 py-3 fs-5 fw-semibold" download>
                             <i class="fas fa-file-pdf me-2"></i>Descargar Manual en PDF
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -232,42 +232,4 @@
 }
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const downloadBtn = document.getElementById('download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', function () {
-            const element = document.getElementById('manual-content');
-            const downloadContainer = this.closest('.text-center');
-
-            // Ocultar botón durante la generación
-            downloadContainer.style.display = 'none';
-
-            const opt = {
-                margin: [10, 10, 10, 10], // mm
-                filename: 'Manual_Usuario_SRGAF.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait'
-                }
-            };
-
-            html2pdf()
-                .from(element)
-                .set(opt)
-                .save()
-                .then(() => {
-                    downloadContainer.style.display = 'block';
-                });
-        });
-    }
-});
-</script>
 {% endblock %}
