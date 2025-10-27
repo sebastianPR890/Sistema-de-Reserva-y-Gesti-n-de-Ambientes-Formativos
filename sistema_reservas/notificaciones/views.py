@@ -9,6 +9,7 @@ from .models import Notificacion
 
 @login_required
 def listar_notificaciones(request):
+    """Lista las notificaciones del usuario con filtros y paginación."""
     todas_notificaciones = request.user.notificaciones.all()
     estado_filtro = request.GET.get('estado', 'todas')
     
@@ -47,6 +48,7 @@ def listar_notificaciones(request):
 @login_required
 @require_POST
 def marcar_como_leida(request, pk):
+    """Marca una notificación específica como leída."""
     try:
         notificacion = request.user.notificaciones.get(pk=pk)
         if not notificacion.leida:
@@ -68,6 +70,7 @@ def marcar_como_leida(request, pk):
 @login_required
 @require_POST
 def marcar_como_leidas_masiva(request):
+    """Marca todas las notificaciones no leídas como leídas."""
     actualizadas = request.user.notificaciones.filter(leida=False).update(leida=True)
     messages.success(request, f'{actualizadas} notificaciones marcadas como leídas.')
     
@@ -81,5 +84,6 @@ def marcar_como_leidas_masiva(request):
 
 @login_required
 def contar_no_leidas(request):
+    """Retorna el número de notificaciones no leídas del usuario."""
     count = request.user.notificaciones.filter(leida=False).count()
     return JsonResponse({'no_leidas': count})

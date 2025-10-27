@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from .models import Ambiente
 
 class AmbienteForm(forms.ModelForm):
+    """Formulario para crear y editar ambientes con gestión de recursos."""
+    
     # Campos para computadores
     tiene_computadores = forms.BooleanField(required=False, label='Tiene Computadores')
     numero_computadores = forms.IntegerField(
@@ -58,9 +60,9 @@ class AmbienteForm(forms.ModelForm):
         }
         
     def __init__(self, *args, **kwargs):
+        """Inicializa el formulario cargando datos existentes si es edición."""
         super().__init__(*args, **kwargs)
         
-        # Cargar datos existentes si estamos editando
         if self.instance and self.instance.pk and self.instance.recursos:
             recursos = self.instance.recursos
             self.fields['tiene_computadores'].initial = recursos.get('computadores', False)
@@ -73,6 +75,7 @@ class AmbienteForm(forms.ModelForm):
             self.fields['observaciones'].initial = recursos.get('observaciones', '')
     
     def clean_nombre(self):
+        """Valida que el nombre del ambiente sea único."""
         nombre = self.cleaned_data.get('nombre')
         if nombre:
             if Ambiente.objects.filter(nombre__iexact=nombre).exclude(pk=self.instance.pk if self.instance else None).exists():
@@ -80,6 +83,7 @@ class AmbienteForm(forms.ModelForm):
         return nombre
 
     def clean_codigo(self):
+        """Valida que el código del ambiente sea único."""
         codigo = self.cleaned_data.get('codigo')
         if codigo:
             codigo = codigo.upper().strip()
@@ -88,6 +92,7 @@ class AmbienteForm(forms.ModelForm):
         return codigo
     
     def clean(self):
+        """Valida los datos del formulario de forma integral."""
         cleaned_data = super().clean()
         
         # Validar computadores
@@ -115,9 +120,9 @@ class AmbienteForm(forms.ModelForm):
         return cleaned_data
     
     def save(self, commit=True):
+        """Guarda el ambiente con la información de recursos en formato JSON."""
         instance = super().save(commit=False)
         
-        # Construir JSON de recursos
         recursos = {
             'computadores': self.cleaned_data.get('tiene_computadores', False),
             'numero_computadores': self.cleaned_data.get('numero_computadores', 0) if self.cleaned_data.get('tiene_computadores') else 0,
@@ -136,6 +141,8 @@ class AmbienteForm(forms.ModelForm):
         return instance
 
 class BusquedaAmbienteForm(forms.Form):
+    """Formulario para buscar y filtrar ambientes."""
+    
     busqueda = forms.CharField(
         max_length=100, 
         required=False,
@@ -163,6 +170,8 @@ class BusquedaAmbienteForm(forms.Form):
     con_tablero_digital = forms.BooleanField(required=False, label='Con tablero digital')
     
 class CrearAmbienteForm(forms.ModelForm):
+    """Formulario simplificado para crear ambientes."""
+    
     class Meta:
         model = Ambiente
         fields = ['codigo', 'nombre', 'descripcion', 'capacidad', 'tipo', 'ubicacion']
@@ -176,6 +185,7 @@ class CrearAmbienteForm(forms.ModelForm):
         }
 
     def clean_nombre(self):
+        """Valida que el nombre del ambiente sea único."""
         nombre = self.cleaned_data.get('nombre')
         if Ambiente.objects.filter(nombre__iexact=nombre).exists():
             raise ValidationError("Ya existe un ambiente con este nombre.")

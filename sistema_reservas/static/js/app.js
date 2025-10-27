@@ -1,10 +1,11 @@
-// Toggle del menú
+// Controla el toggle del menú lateral
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('overlay');
-const contentWrapper = document.querySelector('.content-wrapper'); // Asegúrate de que este selector es correcto
+const contentWrapper = document.querySelector('.content-wrapper');
 
 function toggleMenu() {
+    /**Alterna la visibilidad del menú lateral.**/
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
     menuToggle.classList.toggle('active');
@@ -18,10 +19,10 @@ if (menuToggle && sidebar && overlay) {
     overlay.addEventListener('click', toggleMenu);
 }
 
-// Crear partículas flotantes
 function createParticles() {
+    /**Crea partículas flotantes de fondo para efectos visuales.**/
     const particles = document.getElementById('particles');
-    if (!particles) return; // Evitar error si no existe el elemento
+    if (!particles) return;
     
     const particleCount = 50;
 
@@ -44,8 +45,8 @@ function createParticles() {
     }
 }
 
-// Efecto de escritura en el título
 function typeWriter(element, text, speed = 100) {
+    /**Crea un efecto de escritura animada en el elemento especificado.**/
     if (!element) return;
     let i = 0;
     element.innerHTML = '';

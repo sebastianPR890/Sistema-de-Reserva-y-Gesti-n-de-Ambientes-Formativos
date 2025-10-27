@@ -13,20 +13,17 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.urls import reverse
 
-# --- Vistas de Autenticación ---
-
 def login_view(request):
+    """Maneja el inicio de sesión de usuarios."""
     if request.user.is_authenticated:
         return redirect('/')
         
     if request.method == 'POST':
-        documento = request.POST.get('username')  # El campo se llama username en el form
+        documento = request.POST.get('username')
         password = request.POST.get('password')
         
         try:
-            # Primero buscamos por documento
             user = Usuario.objects.get(documento=documento)
-            # Intentamos autenticar usando el username (que es igual al documento)
             user = authenticate(username=user.username, password=password)
             if user is not None:
                 login(request, user)
@@ -44,6 +41,7 @@ def login_view(request):
     return render(request, 'login/login.html', {'form': form})
 
 def registro_view(request):
+    """Maneja el registro de nuevos usuarios."""
     if request.user.is_authenticated:
         return redirect('/')
         
@@ -61,6 +59,7 @@ def registro_view(request):
 
 @login_required
 def logout_view(request):
+    """Maneja el cierre de sesión."""
     logout(request)
     messages.success(request, 'Has cerrado sesión exitosamente')
     return redirect('login:login')
@@ -69,28 +68,18 @@ def logout_view(request):
 # --- Vistas de Recuperación de Contraseña ---
 
 def recu_contra(request):
+    """Maneja la recuperación de contraseña vía email."""
     if request.method == 'POST':
         email = request.POST.get('email')
         
         try:
-            # 1. Buscar al usuario
             user = Usuario.objects.get(email=email) 
             
-            # --- CORRECCIÓN CLAVE INICIA AQUÍ ---
-            
-            # 2. Guarda el email del usuario
             recovery_email = user.email
-
-            # 3. Se crea una instancia de TimestampSigner
             signer = TimestampSigner()
-            
-            # 4. Se firma el id del usuario para generar un token único
-            token = signer.sign(str(user.pk))  # <-- 'token' se define aquí
-            
-            # 5. Se construye la URL absoluta USANDO el token
+            token = signer.sign(str(user.pk))
             reset_url = request.build_absolute_uri(reverse('login:cambia_con', args=[token]))
             
-            # 6. Se renderiza la plantilla del mensaje de correo
             html_message = render_to_string('login/msg_correo.html', {
                 'username': user.documento,
                 'reset_url': reset_url,
@@ -107,8 +96,6 @@ def recu_contra(request):
             return render(request, 'login/recuperar_contraseña.html')
         
         
-        try:
-            # Se prepara el correo (resto del código de envío)
             email = EmailMultiAlternatives(
                 subject=subject,
                 body=text_message,
@@ -116,9 +103,7 @@ def recu_contra(request):
                 to=[recovery_email]
             )
             
-            # Adjuntamos la versión HTML (la corrección que hicimos antes)
             email.attach_alternative(html_message, "text/html") 
-            
             email.encoding = 'utf-8'
             email.send()
             
@@ -127,18 +112,20 @@ def recu_contra(request):
         except Exception as e:
             messages.error(request, f"Error al enviar el correo: {str(e)}")
             return render(request, 'login/recuperar_contraseña.html')
+        except Usuario.DoesNotExist:
+            messages.error(request, "El correo ingresado no está registrado.")
+            return render(request, 'login/recuperar_contraseña.html')
         
     return render(request, 'login/recuperar_contraseña.html')
 
 def cambia_con(request, token):
+    """Permite cambiar la contraseña usando un token de recuperación."""
     signer = TimestampSigner()
     try:
         user_id = signer.unsign(token, max_age=3600)
-        # CORRECCIÓN: Usamos el modelo Usuario
         usuario = get_object_or_404(Usuario, pk=user_id) 
     except (BadSignature, SignatureExpired):
         messages.error(request, "El enlace de recuperación es inválido o ha expirado.")
-        # CORRECCIÓN: Redirige a la recuperación con el namespace correcto
         return redirect("login:recu_contra")
     
     if request.method == 'POST':
@@ -153,7 +140,9 @@ def cambia_con(request, token):
         usuario.save()
         
         messages.success(request, "La contraseña se ha cambiado correctamente.")
-        # CORRECCIÓN: Redirige al login con el namespace correcto
+        return redirect("login:login")
+    
+    return render(request, 'login/cambia_contraseña.html')
         return redirect("login:login") 
     
     return render(request, 'login/cambia_contraseña.html')

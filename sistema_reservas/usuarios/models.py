@@ -1,9 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
-from django.utils import timezone # Importar timezone para consistencia
+from django.utils import timezone
 
 class Usuario(AbstractUser):
+    """Modelo personalizado de usuario que extiende AbstractUser."""
+    
     ROLES = [
         ('instructor', 'Instructor'),
         ('administrativo', 'Administrativo'),
@@ -24,24 +26,21 @@ class Usuario(AbstractUser):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     
-    # Sobrescribir campos de AbstractUser
-    username = models.CharField(max_length=150, unique=True)  # Quitamos blank=True y null=True
+    username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=150, blank=True, null=True)
     
-    # USERNAME_FIELD permanece como 'username' para compatibilidad con createsuperuser
     USERNAME_FIELD = 'username'
-    # Agregamos documento como campo requerido
     REQUIRED_FIELDS = ['email', 'documento', 'nombres', 'apellidos'] 
     
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
-        db_table = 'usuarios' # Nombre de la tabla en la base de datos
-        ordering = ['apellidos', 'nombres'] # Ordenamiento por defecto
+        db_table = 'usuarios'
+        ordering = ['apellidos', 'nombres']
     
     def save(self, *args, **kwargs):
-        # Si no hay username, usar el documento
+        """Sincroniza campos antes de guardar el usuario."""
         if not self.username:
             self.username = self.documento
         if not self.first_name:
@@ -49,15 +48,15 @@ class Usuario(AbstractUser):
         if not self.last_name:
             self.last_name = self.apellidos
             
-        # Sincronizar is_active con activo
         self.is_active = self.activo
-        
         super().save(*args, **kwargs)
     
     def nombre_completo(self):
+        """Retorna el nombre completo del usuario."""
         return f"{self.nombres} {self.apellidos}"
     
     def puede_aprobar_reservas(self):
+        """Verifica si el usuario puede aprobar reservas."""
         return self.rol in ['coordinador', 'admin']
     
     def __str__(self):

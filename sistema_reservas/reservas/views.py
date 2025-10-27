@@ -16,13 +16,12 @@ import pytz
 from .forms import ReservaForm
 
 def index(request):
-    """Vista del index accesible para todos los usuarios."""
+    """Vista principal accesible para todos los usuarios."""
     return render(request, 'index.html')
 
-# Proteger todas las demás vistas
 @login_required
 def lista_reservas(request):
-    # Determinar qué reservas mostrar basado en el tipo de usuario
+    """Muestra la lista de reservas según el tipo de usuario."""
     if request.user.is_staff:
         reservas = Reserva.objects.select_related('usuario', 'ambiente').all()
         user_type = 'admin'
@@ -50,16 +49,17 @@ def lista_reservas(request):
 
 @login_required
 def crear_reserva(request):
+    """Permite crear una nueva reserva."""
     if request.method == 'POST':
         form = ReservaForm(request.POST)
         if form.is_valid():
             reserva = form.save(commit=False)
-            reserva.usuario = request.user # Asigna el usuario actual a la reserva
+            reserva.usuario = request.user
             reserva.save()
             Notificacion.crear(
                 usuario=request.user,
                 titulo='Reserva Creada',
-                mensaje=f'Tu reserva ha sido creada y está pendiente de aprobación.', # Mensaje sin ambiente.nombre
+                mensaje=f'Tu reserva ha sido creada y está pendiente de aprobación.',
                 tipo='reserva'
             )
             messages.success(request, '¡Reserva creada exitosamente!')
@@ -71,13 +71,12 @@ def crear_reserva(request):
 
 @login_required
 def editar_reserva(request, pk):
+    """Permite editar una reserva existente."""
     reserva = get_object_or_404(Reserva, pk=pk)
 
-    # Solo el dueño de la reserva o un superusuario pueden editar
     if reserva.usuario != request.user and not request.user.is_superuser:
         return HttpResponseForbidden("No tienes permiso para editar esta reserva.")
 
-    # Lógica del modelo para verificar si la reserva es editable
     if not reserva.puede_ser_editada():
         messages.error(request, 'Esta reserva ya no puede ser editada.')
         return redirect('reservas:lista_reservas')
@@ -89,7 +88,7 @@ def editar_reserva(request, pk):
             Notificacion.crear(
                 usuario=request.user,
                 titulo='Reserva Actualizada',
-                mensaje=f'Tu reserva ha sido actualizada correctamente.', # Mensaje sin ambiente.nombre
+                mensaje=f'Tu reserva ha sido actualizada correctamente.',
                 tipo='reserva'
             )
             messages.success(request, '¡Reserva actualizada exitosamente!')
@@ -101,22 +100,20 @@ def editar_reserva(request, pk):
 
 @login_required
 def eliminar_reserva(request, pk):
+    """Permite eliminar una reserva."""
     reserva = get_object_or_404(Reserva, pk=pk)
 
-    # Solo el dueño de la reserva o un superusuario pueden eliminar
     if reserva.usuario != request.user and not request.user.is_superuser:
         return HttpResponseForbidden("No tienes permiso para eliminar esta reserva.")
 
     if request.method == 'POST':
-        # Guardamos los datos para la notificación antes de borrar
-        # ambiente_nombre = reserva.ambiente.nombre
         fecha_inicio_str = reserva.fecha_inicio.strftime("%d/%m/%Y a las %H:%M")
         
         reserva.delete()
         Notificacion.crear(
             usuario=request.user,
             titulo='Reserva Eliminada',
-            mensaje=f'Tu reserva del {fecha_inicio_str} ha sido eliminada.', # Mensaje sin ambiente_nombre
+            mensaje=f'Tu reserva del {fecha_inicio_str} ha sido eliminada.',
             tipo='reserva'
         )
         messages.success(request, 'Reserva eliminada correctamente.')
@@ -126,32 +123,28 @@ def eliminar_reserva(request, pk):
 
 @login_required
 def descargar_reporte_pdf(request):
-    # Crear el buffer de bytes para el PDF
+    """Genera y descarga un reporte PDF de las reservas."""
     buffer = io.BytesIO()
     
-    # Crear el documento PDF
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     elements = []
     styles = getSampleStyleSheet()
     
-    # Título
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],
         fontSize=16,
         spaceAfter=30,
-        alignment=1  # Centrado
+        alignment=1
     )
     elements.append(Paragraph("Reporte de Reservas", title_style))
     
-    # Obtener las reservas
     if request.user.is_staff:
         reservas = Reserva.objects.select_related('usuario', 'ambiente').all()
     else:
         reservas = Reserva.objects.filter(usuario=request.user).select_related('ambiente')
     
-    # Datos para la tabla
-    data = [['Ambiente', 'Fecha Inicio', 'Fecha Fin', 'Estado']]  # Encabezados
+    data = [['Ambiente', 'Fecha Inicio', 'Fecha Fin', 'Estado']]
     for reserva in reservas:
         data.append([
             reserva.ambiente.nombre,
@@ -160,7 +153,6 @@ def descargar_reporte_pdf(request):
             reserva.get_estado_display()
         ])
     
-    # Crear tabla
     table = Table(data)
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.green),
@@ -179,11 +171,8 @@ def descargar_reporte_pdf(request):
     ]))
     
     elements.append(table)
-    
-    # Generar PDF
     doc.build(elements)
     
-    # Preparar respuesta
     buffer.seek(0)
     return FileResponse(
         buffer,
@@ -193,17 +182,16 @@ def descargar_reporte_pdf(request):
     )
 
 def manual_usuario(request):
-    """Vista para mostrar el manual de usuario en HTML."""
+    """Muestra el manual de usuario en HTML."""
     return render(request, 'manual/manual_usuario.html')
 
 def descargar_manual_pdf(request):
-    """
-    Versión simplificada que devuelve una vista HTML en lugar de PDF
-    """
+    """Retorna la vista HTML del manual de usuario."""
     return render(request, 'manual/manual_usuario.html')
 
 @login_required
 def aprobar_reserva(request, pk):
+    """Aprueba una reserva específica."""
     if not request.user.is_staff:
         messages.error(request, "No tienes permisos para aprobar reservas.")
         return redirect('reservas:lista_reservas')
@@ -214,7 +202,6 @@ def aprobar_reserva(request, pk):
     reserva.fecha_aprobacion = timezone.now()
     reserva.save()
     
-    # Crear notificación para el usuario
     Notificacion.crear(
         usuario=reserva.usuario,
         titulo='Reserva Aprobada',
@@ -227,6 +214,7 @@ def aprobar_reserva(request, pk):
 
 @login_required
 def cancelar_reserva(request, pk):
+    """Cancela una reserva específica."""
     if not request.user.is_staff:
         messages.error(request, "No tienes permisos para cancelar reservas.")
         return redirect('reservas:lista_reservas')
@@ -235,7 +223,6 @@ def cancelar_reserva(request, pk):
     reserva.estado = 'cancelada'
     reserva.save()
     
-    # Crear notificación para el usuario
     Notificacion.crear(
         usuario=reserva.usuario,
         titulo='Reserva Cancelada',

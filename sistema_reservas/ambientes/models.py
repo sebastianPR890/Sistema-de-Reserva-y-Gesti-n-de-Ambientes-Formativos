@@ -1,9 +1,9 @@
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
-
 class Ambiente(models.Model):
+    """Modelo que representa un ambiente formativo."""
+    
     TIPOS = [
         ('aula', 'Aula'),
         ('laboratorio', 'Laboratorio'),
@@ -29,9 +29,11 @@ class Ambiente(models.Model):
         ordering = ['codigo']
         
     def get_recursos_display(self):
+        """Retorna los recursos del ambiente."""
         return self.recursos
         
     def esta_disponible(self, fecha_inicio, fecha_fin, exclude_reserva_id=None):
+        """Verifica si el ambiente está disponible en un rango de fechas."""
         from reservas.models import Reserva
         
         reservas_conflicto = Reserva.objects.filter(

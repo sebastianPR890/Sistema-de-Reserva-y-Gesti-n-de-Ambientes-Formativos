@@ -1,12 +1,11 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-
 from ambientes.models import Ambiente
 
-# Create your models here.
-
 class Equipo(models.Model):
+    """Modelo que representa un equipo de cómputo o mobiliario."""
+    
     ESTADOS = [
         ('disponible', 'Disponible'),
         ('en_uso', 'En uso'),
@@ -41,11 +40,11 @@ class Equipo(models.Model):
         ordering = ['codigo']
     
     def ultimo_movimiento(self):
-        """Obtiene el último movimiento del equipo"""
+        """Obtiene el último movimiento registrado del equipo."""
         return self.movimientos.order_by('-fecha_movimiento').first()
     
     def ubicacion_actual(self):
-        """Determina la ubicación actual del equipo basado en el último movimiento"""
+        """Determina la ubicación actual del equipo."""
         ultimo_mov = self.ultimo_movimiento()
         if ultimo_mov:
             if ultimo_mov.tipo_movimiento == 'entrada' and ultimo_mov.ambiente_destino:
@@ -54,12 +53,14 @@ class Equipo(models.Model):
                 return f"Fuera de {ultimo_mov.ambiente_origen.nombre}"
         if self.ambiente:
             return self.ambiente.nombre
-        return "Desconocida" # Si no hay movimientos ni ambiente asignado
+        return "Desconocida"
     
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
 
 class MovimientoEquipo(models.Model):
+    """Modelo para registrar movimientos de equipos entre ambientes."""
+    
     TIPOS_MOVIMIENTO = [
         ('entrada', 'Entrada'),
         ('salida', 'Salida'),

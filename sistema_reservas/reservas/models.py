@@ -1,12 +1,12 @@
 # reservas/models.py
 from django.db import models
-from django.conf import settings # Para referenciar AUTH_USER_MODEL
+from django.conf import settings
 from django.utils import timezone
-from django.core.exceptions import ValidationError # Para validaciones del modelo
-#from ambientes.models import Ambiente # Ya no es importación local
-#from ambientes.models import Ambiente # ¡IMPORTANTE! Descomentar después de crear la app 'ambientes'
+from django.core.exceptions import ValidationError
 
 class Reserva(models.Model):
+    """Modelo que representa una reserva de ambiente."""
+    
     ESTADOS = [
         ('pendiente', 'Pendiente'),
         ('aprobada', 'Aprobada'),
@@ -15,9 +15,7 @@ class Reserva(models.Model):
         ('completada', 'Completada'),
     ]
     
-    # CAMBIO: on_delete=models.PROTECT para evitar borrados accidentales de Ambiente/Usuario
-    # ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT, related_name='reservas')
-    ambiente = models.ForeignKey('ambientes.Ambiente', on_delete=models.PROTECT, related_name='reservas') # Usamos string para evitar importación circular
+    ambiente = models.ForeignKey('ambientes.Ambiente', on_delete=models.PROTECT, related_name='reservas')
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='reservas')
     
     fecha_inicio = models.DateTimeField()
@@ -43,40 +41,39 @@ class Reserva(models.Model):
         ordering = ['-fecha_creacion']
     
     def clean(self):
-        # Validar que la fecha de fin sea posterior a la de inicio
+        """Valida los datos del modelo antes de guardar."""
         if self.fecha_fin and self.fecha_inicio and self.fecha_fin <= self.fecha_inicio:
             raise ValidationError('La fecha de fin debe ser posterior a la fecha de inicio.')
         
-        # Validar que la fecha de inicio no sea en el pasado para nuevas reservas
         if self.pk is None and self.fecha_inicio and self.fecha_inicio < timezone.now():
             raise ValidationError('No se puede crear una reserva con fecha de inicio en el pasado.')
         
-        # Validar que no haya solapamiento con otras reservas aprobadas
         if self.ambiente and self.fecha_inicio and self.fecha_fin:
             if not self.ambiente.esta_disponible(self.fecha_inicio, self.fecha_fin, exclude_reserva_id=self.pk):
                 raise ValidationError('El ambiente no está disponible en el horario seleccionado.')
     
     def save(self, *args, **kwargs):
-        self.full_clean() # Ejecuta las validaciones del método clean() antes de guardar
+        """Guarda la reserva ejecutando las validaciones."""
+        self.full_clean()
         super().save(*args, **kwargs)
 
     def duracion_horas(self):
-        """Calcula la duración de la reserva en horas"""
+        """Calcula la duración de la reserva en horas."""
         if self.fecha_fin and self.fecha_inicio:
             delta = self.fecha_fin - self.fecha_inicio
             return delta.total_seconds() / 3600
         return 0
     
     def puede_ser_editada(self):
-        """Verifica si la reserva puede ser editada"""
+        """Verifica si la reserva puede ser editada."""
         return self.estado in ['pendiente', 'aprobada'] and self.fecha_inicio > timezone.now()
     
     def puede_ser_cancelada(self):
-        """Verifica si la reserva puede ser cancelada"""
+        """Verifica si la reserva puede ser cancelada."""
         return self.estado in ['pendiente', 'aprobada'] and self.fecha_inicio > timezone.now()
     
     def aprobar(self, usuario_aprobador):
-        """Aprueba la reserva"""
+        """Aprueba la reserva si el usuario tiene permisos."""
         if usuario_aprobador and usuario_aprobador.puede_aprobar_reservas():
             self.estado = 'aprobada'
             self.aprobada_por = usuario_aprobador
@@ -86,7 +83,7 @@ class Reserva(models.Model):
         return False
     
     def rechazar(self, observaciones=''):
-        """Rechaza la reserva"""
+        """Rechaza la reserva con observaciones opcionales."""
         self.estado = 'rechazada'
         if observaciones:
             self.observaciones = observaciones

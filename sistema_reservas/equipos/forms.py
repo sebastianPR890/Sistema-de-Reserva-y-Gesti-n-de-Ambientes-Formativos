@@ -2,9 +2,8 @@ from django import forms
 from .models import Equipo, MovimientoEquipo
 
 class EquipoForm(forms.ModelForm):
-    """
-    Formulario para crear y actualizar un Equipo.
-    """
+    """Formulario para crear y actualizar equipos."""
+    
     class Meta:
         model = Equipo
         fields = [
@@ -23,9 +22,8 @@ class EquipoForm(forms.ModelForm):
         }
     
 class BusquedaEquipoForm(forms.Form):
-    """
-    Formulario para buscar y filtrar la lista de equipos.
-    """
+    """Formulario para buscar y filtrar equipos."""
+    
     busqueda = forms.CharField(
         max_length=100, 
         required=False,
@@ -42,9 +40,8 @@ class BusquedaEquipoForm(forms.Form):
     activo = forms.BooleanField(required=False, initial=True, label='Solo activos')
     
 class MovimientoEquipoForm(forms.ModelForm):
-    """
-    Formulario para registrar un movimiento de equipo.
-    """
+    """Formulario para registrar movimientos de equipos."""
+    
     class Meta:
         model = MovimientoEquipo
         fields = [
